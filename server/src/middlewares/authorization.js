@@ -5,7 +5,7 @@ export const userAuth = async (req, res, next) => {
 
   const decoded = await verifyToken(authorization);
 
-  console.log(decoded);
+  // console.log(decoded);
 
   if (decoded.sub) {
     if (decoded.hd !== "leadia.co.kr") {

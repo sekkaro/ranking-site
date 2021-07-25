@@ -16,7 +16,9 @@ const Login = () => {
 
   const onSuccess = (res) => {
     console.log("success: ", res);
-    dispatch(login(res.tokenObj.id_token, history));
+    dispatch(
+      login(res.tokenId, history, res.profileObj.email, res.profileObj.name)
+    );
   };
 
   const onFailure = (res) => {
