@@ -1,10 +1,21 @@
+import { makeStyles } from "@material-ui/core";
 import React, { useEffect } from "react";
 import GoogleLogin from "react-google-login";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { login } from "./loginAction";
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    height: "100vh",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+}));
+
 const Login = () => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
   const { error } = useSelector((state) => state.auth);
@@ -26,7 +37,7 @@ const Login = () => {
     alert(res.error);
   };
   return (
-    <div>
+    <div className={classes.root}>
       <GoogleLogin
         clientId={process.env.REACT_APP_GOOGLE_LOGIN_CLIENT_ID}
         hostedDomain="leadia.co.kr"

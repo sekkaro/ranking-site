@@ -6,6 +6,7 @@ import morgan from "morgan";
 import cors from "cors";
 
 import authRoute from "./routes/auth";
+import playerRoute from "./routes/players";
 
 const main = () => {
   const app = express();
@@ -25,6 +26,7 @@ const main = () => {
   const port = process.env.PORT || 3001;
 
   app.use("/api/auth", authRoute);
+  app.use("/api/players", playerRoute);
 
   app.listen(port, () => {
     console.log("Backend server is running");

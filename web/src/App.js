@@ -4,6 +4,7 @@ import AdminRoute from "./components/admin-route/AdminRoute";
 import Admin from "./pages/admin/Admin";
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
+import Players from "./pages/player-list/Players";
 
 function App() {
   return (
@@ -18,6 +19,9 @@ function App() {
           </Route>
           <AdminRoute path="/admin">
             <Admin />
+          </AdminRoute>
+          <AdminRoute path="/players">
+            <Players />
           </AdminRoute>
         </Switch>
       </Router>
