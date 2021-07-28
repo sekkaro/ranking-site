@@ -2,11 +2,11 @@ import axios from "axios";
 
 const authUri = process.env.REACT_APP_API_URI + "/auth";
 
-export const verify = () =>
+export const me = () =>
   new Promise(async (resolve, reject) => {
     try {
       const token = localStorage.getItem("token");
-      const result = await axios.get(`${authUri}/verify`, {
+      const result = await axios.get(`${authUri}/me`, {
         headers: {
           Authorization: token,
         },
@@ -43,7 +43,7 @@ export const loginUser = (token, email, name) =>
       }
 
       localStorage.setItem("token", token);
-      resolve(result);
+      resolve(result.data);
     } catch (err) {
       reject(err);
     }

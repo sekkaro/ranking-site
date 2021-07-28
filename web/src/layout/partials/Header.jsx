@@ -26,7 +26,8 @@ import {
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 import { Link, NavLink } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import GroupIcon from "@material-ui/icons/Group";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../pages/login/loginAction";
 
 const drawerWidth = 240;
@@ -54,11 +55,11 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
-  // button: {
-  //   "&.active": {
-  //     background: "grey",
-  //   },
-  // },
+  item: {
+    "&.active": {
+      background: "#e0dcdc",
+    },
+  },
   // link: {
   //   marginRight: 100,
   // },
@@ -67,12 +68,8 @@ const useStyles = makeStyles((theme) => ({
 const Header = ({ isAdmin }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [openCollapse, setOpenCollapse] = useState(false);
+  const { user } = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
-
-  const handleOpenSettings = () => {
-    setOpenCollapse(!openCollapse);
-  };
 
   const toggleDrawer = () => {
     setOpen((open) => !open);
@@ -106,38 +103,57 @@ const Header = ({ isAdmin }) => {
           )}
         </Toolbar>
       </AppBar>
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <Toolbar />
-        <div className={classes.drawerContainer}>
-          <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-              <ListItem button key={text}>
+      {isAdmin && (
+        <Drawer
+          open={open}
+          className={classes.drawer}
+          variant="persistent"
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+        >
+          <Toolbar />
+          <div className={classes.drawerContainer}>
+            <List>
+              <div>안녕하세요 {user.name}님</div>
+              <Divider />
+              <ListItem
+                className={classes.item}
+                component={NavLink}
+                to="/players"
+                button
+                key="players"
+              >
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  <GroupIcon />
                 </ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText primary="players" />
               </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-        </div>
-      </Drawer>
+              {/* {["Inbox", "Starred", "Send email", "Drafts"].map(
+                (text, index) => (
+                  <ListItem button key={text}>
+                    <ListItemIcon>
+                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                    </ListItemIcon>
+                    <ListItemText primary={text} />
+                  </ListItem>
+                )
+              )} */}
+            </List>
+            {/* <Divider />
+            <List>
+              {["All mail", "Trash", "Spam"].map((text, index) => (
+                <ListItem button key={text}>
+                  <ListItemIcon>
+                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  </ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItem>
+              ))}
+            </List> */}
+          </div>
+        </Drawer>
+      )}
     </>
   );
 };

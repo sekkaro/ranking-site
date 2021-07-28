@@ -4,7 +4,7 @@ import User from "../models/User";
 
 const router = express.Router();
 
-router.get("/verify", userAuth, async (req, res) => {
+router.get("/me", userAuth, async (req, res) => {
   try {
     const userId = req.userId;
     const user = await User.findOne({
@@ -15,7 +15,9 @@ router.get("/verify", userAuth, async (req, res) => {
       return res.json({ message: "user not found" });
     }
 
-    res.json({ status: "success" });
+    const { email, name } = user._doc;
+
+    res.json({ email, name });
   } catch (err) {
     res.json({ message: err.message });
   }
