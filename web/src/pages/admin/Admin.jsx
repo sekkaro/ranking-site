@@ -1,16 +1,6 @@
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { getUserInfo } from "./meAction";
+import React from "react";
 
 const Admin = () => {
-  const dispatch = useDispatch();
-  const history = useHistory();
-
-  useEffect(() => {
-    dispatch(getUserInfo(history));
-  }, [dispatch, history]);
-
   return (
     <div
       style={{

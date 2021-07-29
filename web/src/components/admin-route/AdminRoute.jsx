@@ -5,17 +5,6 @@ import DefaultLayout from "../../layout/DefaultLayout";
 
 const AdminRoute = ({ children, ...props }) => {
   const { isAuth } = useSelector((state) => state.auth);
-  // const dispatch = useDispatch();
-  // const history = useHistory();
-
-  // useEffect(() => {
-  //   if (!isAuth && localStorage.getItem("token")) {
-  //     history.location.state = {
-  //       from: props.location,
-  //     };
-  //     dispatch(autoLogin(history));
-  //   }
-  // }, [isAuth, dispatch, history, props.location]);
 
   return (
     <Route

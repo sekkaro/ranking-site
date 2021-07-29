@@ -14,10 +14,11 @@ import {
 } from "@material-ui/core";
 import GroupIcon from "@material-ui/icons/Group";
 import MenuIcon from "@material-ui/icons/Menu";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { logout } from "../../pages/login/loginAction";
+import { getUserInfo } from "./meAction";
 
 const drawerWidth = 240;
 
@@ -57,12 +58,18 @@ const useStyles = makeStyles((theme) => ({
 const Header = ({ isAdmin }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const { user, isAuth } = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
 
   const toggleDrawer = () => {
     setOpen((open) => !open);
   };
+
+  useEffect(() => {
+    if (isAdmin && !isAuth && localStorage.getItem("token")) {
+      dispatch(getUserInfo());
+    }
+  }, [isAuth, dispatch, isAdmin]);
 
   return (
     <>
