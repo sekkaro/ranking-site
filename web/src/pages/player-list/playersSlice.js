@@ -4,6 +4,7 @@ const initialState = {
   isLoading: true,
   players: [],
   error: null,
+  count: 0,
 };
 
 export const playersSlice = createSlice({
@@ -16,7 +17,8 @@ export const playersSlice = createSlice({
     },
     fetchPlayersSuccess: (state, { payload }) => {
       state.isLoading = false;
-      state.players = payload;
+      state.players = payload.players;
+      state.count = payload.count;
     },
     fetchPlayersFail: (state, { payload }) => {
       state.isLoading = false;

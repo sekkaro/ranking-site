@@ -1,33 +1,22 @@
-import React, { useState } from "react";
 import {
   AppBar,
-  Toolbar,
-  Typography,
   Button,
-  makeStyles,
-  IconButton,
-  MenuItem,
-  Menu,
+  Divider,
   Drawer,
+  IconButton,
+  List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Collapse,
-  List,
-  Divider,
+  makeStyles,
+  Toolbar,
+  Typography,
 } from "@material-ui/core";
-import MenuIcon from "@material-ui/icons/Menu";
-import {
-  AccountCircle,
-  ExpandLess,
-  ExpandMore,
-  Settings,
-} from "@material-ui/icons";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
-import { Link, NavLink } from "react-router-dom";
 import GroupIcon from "@material-ui/icons/Group";
+import MenuIcon from "@material-ui/icons/Menu";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { NavLink } from "react-router-dom";
 import { logout } from "../../pages/login/loginAction";
 
 const drawerWidth = 240;

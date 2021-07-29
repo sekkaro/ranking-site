@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TableContainer,
   Table,
@@ -9,8 +9,12 @@ import {
   makeStyles,
   TableRow,
 } from "@material-ui/core";
+import { useHistory, withRouter } from "react-router-dom";
+import qs from "query-string";
+import Pagination from "@material-ui/lab/Pagination";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchPlayers } from "./playersAction";
+import { limit } from "../../constants";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,16 +23,28 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  tableContainer: {
+    width: "80%",
+  },
 }));
 
-const Players = () => {
+const Players = ({ location }) => {
   const classes = useStyles();
-  const { isLoading, players, error } = useSelector((state) => state.players);
+  const history = useHistory();
+  const queryParams = qs.parse(location.search);
+  const page = parseInt(queryParams.page || 1);
+  const { isLoading, players, error, count } = useSelector(
+    (state) => state.players
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchPlayers());
-  }, [dispatch]);
+    dispatch(fetchPlayers(page));
+  }, [dispatch, page]);
+
+  const handleChange = (_, page) => {
+    history.push({ search: qs.stringify({ ...queryParams, page }) });
+  };
 
   if (isLoading) {
     return (
@@ -40,7 +56,7 @@ const Players = () => {
 
   return (
     <div className={classes.root}>
-      <TableContainer>
+      <TableContainer className={classes.tableContainer}>
         <Table>
           <TableHead>
             <TableRow>
@@ -53,7 +69,7 @@ const Players = () => {
           <TableBody>
             {players.map((p, idx) => (
               <TableRow key={p._id}>
-                <TableCell>{idx + 1}</TableCell>
+                <TableCell>{limit * (page - 1) + idx + 1}</TableCell>
                 <TableCell component="th" scope="row">
                   {p.name}
                 </TableCell>
@@ -63,9 +79,16 @@ const Players = () => {
             ))}
           </TableBody>
         </Table>
+        <Pagination
+          count={count}
+          siblingCount={2}
+          // defaultPage={1}
+          page={page}
+          onChange={handleChange}
+        />
       </TableContainer>
     </div>
   );
 };
 
-export default Players;
+export default withRouter(Players);

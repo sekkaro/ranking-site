@@ -30,20 +30,27 @@ router.get("/", userAuth, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 20;
     const page = parseInt(req.query.page) || 0;
+    let count;
+    await Player.countDocuments({}, (err, val) => {
+      if (err) {
+        throw new Error(err.message);
+      }
+      count = val;
+    });
     const result = await Player.find({}, null, {
       limit,
       skip: limit * page,
     }).select("matches goals assists name");
     // .populate("creator");
     // const { creatorId, ...others } = result._doc;
-    res.json(result);
+    res.json({ players: result, count: Math.ceil(count / limit) });
   } catch (err) {
     console.log(err);
     res.json({ message: err.message });
   }
 });
 
-// get a ticket
+// get a player
 router.get("/:id", userAuth, async (req, res) => {
   try {
     const id = req.params.id;

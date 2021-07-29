@@ -9,7 +9,7 @@ const Admin = () => {
 
   useEffect(() => {
     dispatch(getUserInfo(history));
-  }, [dispatch]);
+  }, [dispatch, history]);
 
   return (
     <div
