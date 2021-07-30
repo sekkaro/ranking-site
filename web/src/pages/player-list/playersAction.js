@@ -7,18 +7,18 @@ import {
 } from "./playersSlice";
 
 export const fetchPlayers =
-  (history, page = 0) =>
+  (history, page = 0, keyword = "") =>
   async (dispatch) => {
     try {
       dispatch(fetchPlayersPending());
-      const players = await getAllPlayers(page);
+      const players = await getAllPlayers(page, keyword);
       dispatch(fetchPlayersSuccess(players));
     } catch (err) {
       console.log(err);
       if (err.message === "Forbidden") {
         dispatch(loginFail(err.message));
         localStorage.removeItem("token");
-        history.push("/");
+        history.push("/login");
       }
       dispatch(fetchPlayersFail(err.message));
     }

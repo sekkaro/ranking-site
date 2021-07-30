@@ -30,17 +30,25 @@ router.get("/", userAuth, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 20;
     const page = parseInt(req.query.page) || 0;
+    const keyword = req.query.keyword || "";
     let count;
-    await Player.countDocuments({}, (err, val) => {
-      if (err) {
-        throw new Error(err.message);
+    await Player.countDocuments(
+      { name: { $regex: keyword, $options: "i" } },
+      (err, val) => {
+        if (err) {
+          throw new Error(err.message);
+        }
+        count = val;
       }
-      count = val;
-    });
-    const result = await Player.find({}, null, {
-      limit,
-      skip: limit * page,
-    }).select("matches goals assists name");
+    );
+    const result = await Player.find(
+      { name: { $regex: keyword, $options: "i" } },
+      null,
+      {
+        limit,
+        skip: limit * page,
+      }
+    ).select("matches goals assists name");
     // .populate("creator");
     // const { creatorId, ...others } = result._doc;
     res.json({ players: result, count: Math.ceil(count / limit) });

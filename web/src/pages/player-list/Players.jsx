@@ -8,7 +8,13 @@ import {
   CircularProgress,
   makeStyles,
   TableRow,
+  Input,
+  Button,
+  InputAdornment,
+  IconButton,
 } from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { useHistory, withRouter } from "react-router-dom";
 import qs from "query-string";
 import Pagination from "@material-ui/lab/Pagination";
@@ -26,6 +32,12 @@ const useStyles = makeStyles((theme) => ({
   tableContainer: {
     width: "80%",
   },
+  search: {
+    float: "right",
+  },
+  // form: {
+  //   display: "flex",
+  // },
 }));
 
 const Players = ({ location }) => {
@@ -33,17 +45,37 @@ const Players = ({ location }) => {
   const history = useHistory();
   const queryParams = qs.parse(location.search);
   const page = parseInt(queryParams.page || 1);
+  const { q } = queryParams;
   const { isLoading, players, error, count } = useSelector(
     (state) => state.players
   );
+  const [keyword, setKeyword] = useState(q || "");
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchPlayers(history, page));
-  }, [dispatch, page, history]);
+    dispatch(fetchPlayers(history, page, q));
+  }, [dispatch, history, page, q]);
 
-  const handleChange = (_, page) => {
+  const handlePageChange = (_, page) => {
     history.push({ search: qs.stringify({ ...queryParams, page }) });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "keyword") {
+      setKeyword(value);
+    }
+  };
+
+  const onSearch = () => {
+    history.push({ search: qs.stringify({ ...queryParams, q: keyword }) });
+  };
+
+  const onResetKeyword = () => {
+    setKeyword("");
+    history.push({
+      search: qs.stringify({ ...queryParams, q: "" }),
+    });
   };
 
   if (isLoading) {
@@ -57,6 +89,26 @@ const Players = ({ location }) => {
   return (
     <div className={classes.root}>
       <TableContainer className={classes.tableContainer}>
+        <div className={classes.search}>
+          <Input
+            placeholder="Search name..."
+            value={keyword}
+            onChange={handleChange}
+            name="keyword"
+            endAdornment={
+              keyword && (
+                <InputAdornment position="end">
+                  <IconButton onClick={onResetKeyword}>
+                    <HighlightOffIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }
+          />
+          <Button onClick={onSearch}>
+            <SearchIcon />
+          </Button>
+        </div>
         <Table>
           <TableHead>
             <TableRow>
@@ -84,7 +136,7 @@ const Players = ({ location }) => {
           siblingCount={2}
           // defaultPage={1}
           page={page}
-          onChange={handleChange}
+          onChange={handlePageChange}
         />
       </TableContainer>
     </div>
