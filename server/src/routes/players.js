@@ -31,6 +31,8 @@ router.get("/", userAuth, async (req, res) => {
     const limit = parseInt(req.query.limit) || 20;
     const page = parseInt(req.query.page) || 0;
     const keyword = req.query.keyword || "";
+    const sort = req.query.sort || "createdAt";
+    const type = req.query.type || "asc";
     let count;
     await Player.countDocuments(
       { name: { $regex: keyword, $options: "i" } },
@@ -47,6 +49,9 @@ router.get("/", userAuth, async (req, res) => {
       {
         limit,
         skip: limit * page,
+        sort: {
+          [sort]: type,
+        },
       }
     ).select("matches goals assists name");
     // .populate("creator");

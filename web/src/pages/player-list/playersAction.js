@@ -7,11 +7,11 @@ import {
 } from "./playersSlice";
 
 export const fetchPlayers =
-  (history, page = 0, keyword = "") =>
+  (history, page = 0, keyword = "", sort = "", type = "") =>
   async (dispatch) => {
     try {
       dispatch(fetchPlayersPending());
-      const players = await getAllPlayers(page, keyword);
+      const players = await getAllPlayers(page, keyword, sort, type);
       dispatch(fetchPlayersSuccess(players));
     } catch (err) {
       console.log(err);

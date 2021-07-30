@@ -15,6 +15,8 @@ import {
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import { useHistory, withRouter } from "react-router-dom";
 import qs from "query-string";
 import Pagination from "@material-ui/lab/Pagination";
@@ -45,16 +47,19 @@ const Players = ({ location }) => {
   const history = useHistory();
   const queryParams = qs.parse(location.search);
   const page = parseInt(queryParams.page || 1);
-  const { q } = queryParams;
+  const { q, sort, type } = queryParams;
   const { isLoading, players, error, count } = useSelector(
     (state) => state.players
   );
   const [keyword, setKeyword] = useState(q || "");
+  const [isGoalsClicked, setIsGoalsClicked] = useState(sort === "goals");
+  const [isAssistsClicked, setIsAssistsClicked] = useState(sort === "assists");
+  const [isAsc, setIsAsc] = useState(type === "asc");
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchPlayers(history, page, q));
-  }, [dispatch, history, page, q]);
+    dispatch(fetchPlayers(history, page, q, sort, type));
+  }, [dispatch, history, page, q, sort, type]);
 
   const handlePageChange = (_, page) => {
     history.push({ search: qs.stringify({ ...queryParams, page }) });
@@ -68,7 +73,9 @@ const Players = ({ location }) => {
   };
 
   const onSearch = () => {
-    history.push({ search: qs.stringify({ ...queryParams, q: keyword }) });
+    history.push({
+      search: qs.stringify({ ...queryParams, q: keyword, page: 1 }),
+    });
   };
 
   const onResetKeyword = () => {
@@ -76,6 +83,43 @@ const Players = ({ location }) => {
     history.push({
       search: qs.stringify({ ...queryParams, q: "" }),
     });
+  };
+
+  const sortClickHandler = (key) => {
+    let type = "desc";
+    if (key === "goals") {
+      setIsGoalsClicked(true);
+      setIsAssistsClicked(false);
+      if (isGoalsClicked) {
+        setIsAsc((prev) => {
+          if (!prev) {
+            type = "asc";
+          }
+          return !prev;
+        });
+      } else {
+        setIsAsc(false);
+      }
+      history.push({
+        search: qs.stringify({ ...queryParams, sort: key, type }),
+      });
+    } else {
+      setIsAssistsClicked(true);
+      setIsGoalsClicked(false);
+      if (isAssistsClicked) {
+        setIsAsc((prev) => {
+          if (!prev) {
+            type = "asc";
+          }
+          return !prev;
+        });
+      } else {
+        setIsAsc(false);
+      }
+      history.push({
+        search: qs.stringify({ ...queryParams, sort: key, type }),
+      });
+    }
   };
 
   if (isLoading) {
@@ -114,8 +158,42 @@ const Players = ({ location }) => {
             <TableRow>
               <TableCell>#</TableCell>
               <TableCell>Name</TableCell>
-              <TableCell>Goals</TableCell>
-              <TableCell>Assists</TableCell>
+              <TableCell>
+                <Button
+                  style={{ backgroundColor: "transparent" }}
+                  disableRipple
+                  onClick={() => sortClickHandler("goals")}
+                  endIcon={
+                    isGoalsClicked ? (
+                      isAsc ? (
+                        <ArrowUpwardIcon />
+                      ) : (
+                        <ArrowDownwardIcon />
+                      )
+                    ) : null
+                  }
+                >
+                  Goals
+                </Button>
+              </TableCell>
+              <TableCell>
+                <Button
+                  style={{ backgroundColor: "transparent" }}
+                  disableRipple
+                  onClick={() => sortClickHandler("assists")}
+                  endIcon={
+                    isAssistsClicked ? (
+                      isAsc ? (
+                        <ArrowUpwardIcon />
+                      ) : (
+                        <ArrowDownwardIcon />
+                      )
+                    ) : null
+                  }
+                >
+                  Assists
+                </Button>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
