@@ -44,6 +44,8 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    textDecoration: "none",
+    color: "inherit",
   },
   item: {
     "&.active": {
@@ -84,7 +86,12 @@ const Header = ({ isAdmin }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
+          <Typography
+            component={NavLink}
+            to="/admin"
+            variant="h6"
+            className={classes.title}
+          >
             Ranking {isAdmin && "Admin"} site
           </Typography>
           {isAdmin && (

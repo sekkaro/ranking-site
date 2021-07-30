@@ -7,7 +7,7 @@ import {
 } from "./playersSlice";
 
 export const fetchPlayers =
-  (page = 0) =>
+  (history, page = 0) =>
   async (dispatch) => {
     try {
       dispatch(fetchPlayersPending());
@@ -18,6 +18,7 @@ export const fetchPlayers =
       if (err.message === "Forbidden") {
         dispatch(loginFail(err.message));
         localStorage.removeItem("token");
+        history.push("/");
       }
       dispatch(fetchPlayersFail(err.message));
     }
