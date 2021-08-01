@@ -17,8 +17,8 @@ export const fetchPlayers =
       console.log(err);
       if (err.message === "Forbidden") {
         dispatch(loginFail(err.message));
-        localStorage.removeItem("token");
-        history.push("/login");
+        // localStorage.removeItem("token");
+        // history.push("/login");
       }
       dispatch(fetchPlayersFail(err.message));
     }

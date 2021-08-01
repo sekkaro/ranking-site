@@ -8,6 +8,6 @@ export const getUserInfo = () => async (dispatch) => {
   } catch (err) {
     console.log(err);
     dispatch(loginFail(err.message));
-    localStorage.removeItem("token");
+    // localStorage.removeItem("token");
   }
 };

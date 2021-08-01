@@ -17,7 +17,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
-import { useHistory, withRouter } from "react-router-dom";
+import { NavLink, useHistory, withRouter } from "react-router-dom";
 import qs from "query-string";
 import Pagination from "@material-ui/lab/Pagination";
 import { useSelector, useDispatch } from "react-redux";
@@ -201,7 +201,7 @@ const Players = ({ location }) => {
               <TableRow key={p._id}>
                 <TableCell>{limit * (page - 1) + idx + 1}</TableCell>
                 <TableCell component="th" scope="row">
-                  {p.name}
+                  <NavLink to={`/players/${p._id}`}>{p.name}</NavLink>
                 </TableCell>
                 <TableCell>{p.goals}</TableCell>
                 <TableCell>{p.assists}</TableCell>
