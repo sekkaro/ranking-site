@@ -1,12 +1,15 @@
-import { getPlayerDetail } from "../../api/playersApi";
+import { editPlayerDetail, getPlayerDetail } from "../../api/playersApi";
 import { loginFail } from "../admin/authSlice";
 import {
+  editPlayerFail,
+  editPlayerPending,
+  editPlayerSuccess,
   fetchPlayerFail,
   fetchPlayerPending,
   fetchPlayerSuccess,
 } from "./playerDetailSlice";
 
-export const fetchPlayerDetail = (history, id) => async (dispatch) => {
+export const fetchPlayerDetail = (id) => async (dispatch) => {
   try {
     dispatch(fetchPlayerPending());
     const player = await getPlayerDetail(id);
@@ -15,9 +18,21 @@ export const fetchPlayerDetail = (history, id) => async (dispatch) => {
     console.log(err);
     if (err.message === "Forbidden") {
       dispatch(loginFail(err.message));
-      // localStorage.removeItem("token");
-      // history.push("/login");
     }
     dispatch(fetchPlayerFail(err.message));
+  }
+};
+
+export const editPlayer = (player) => async (dispatch) => {
+  try {
+    dispatch(editPlayerPending());
+    await editPlayerDetail(player);
+    dispatch(editPlayerSuccess());
+  } catch (err) {
+    console.log(err);
+    if (err.message === "Forbidden") {
+      dispatch(loginFail(err.message));
+    }
+    dispatch(editPlayerFail(err.message));
   }
 };

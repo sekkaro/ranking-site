@@ -77,4 +77,19 @@ router.get("/:id", userAuth, async (req, res) => {
   }
 });
 
+// edit a player
+router.put("/:id/edit", userAuth, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { matches, goals, assists } = req.body;
+
+    await Player.findByIdAndUpdate(id, { matches, goals, assists });
+
+    res.json({ status: "success" });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: err.message });
+  }
+});
+
 export default router;
