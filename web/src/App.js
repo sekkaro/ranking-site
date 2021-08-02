@@ -3,6 +3,7 @@ import "./App.css";
 import AdminRoute from "./components/admin-route/AdminRoute";
 import Admin from "./pages/admin/Admin";
 import Home from "./pages/home/Home";
+import Leagues from "./pages/leagues/Leagues";
 import Login from "./pages/login/Login";
 import Players from "./pages/player-list/Players";
 import PlayerDetail from "./pages/player/PlayerDetail";
@@ -26,6 +27,9 @@ function App() {
           </AdminRoute>
           <AdminRoute path="/players">
             <Players />
+          </AdminRoute>
+          <AdminRoute path="/leagues">
+            <Leagues />
           </AdminRoute>
         </Switch>
       </Router>
