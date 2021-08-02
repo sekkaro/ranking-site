@@ -14,7 +14,9 @@ export const login = (token, history, email, name) => async (dispatch) => {
   }
 };
 
-export const logout = () => (dispatch) => {
-  localStorage.removeItem("token");
-  dispatch(loginFail(""));
-};
+export const logout =
+  (err = "") =>
+  (dispatch) => {
+    localStorage.removeItem("token");
+    dispatch(loginFail(err));
+  };

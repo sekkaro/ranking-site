@@ -3,9 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isLoading: true,
   isEditLoading: false,
+  isDeleteLoading: false,
   player: {},
   error: null,
   editError: null,
+  deleteError: null,
 };
 
 export const playerDetailSlice = createSlice({
@@ -35,6 +37,17 @@ export const playerDetailSlice = createSlice({
       state.isEditLoading = false;
       state.editError = payload;
     },
+    deletePlayerPending: (state) => {
+      state.isDeleteLoading = true;
+      state.deleteError = null;
+    },
+    deletePlayerSuccess: (state) => {
+      state.isDeleteLoading = false;
+    },
+    deletePlayerFail: (state, { payload }) => {
+      state.isDeleteLoading = false;
+      state.deleteError = payload;
+    },
   },
 });
 
@@ -45,6 +58,9 @@ export const {
   editPlayerFail,
   editPlayerPending,
   editPlayerSuccess,
+  deletePlayerFail,
+  deletePlayerPending,
+  deletePlayerSuccess,
 } = playerDetailSlice.actions;
 
 export default playerDetailSlice.reducer;

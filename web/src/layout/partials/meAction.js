@@ -1,5 +1,6 @@
 import { me } from "../../api/authApi";
-import { getUserSuccess, loginFail } from "../../pages/admin/authSlice";
+import { getUserSuccess } from "../../pages/admin/authSlice";
+import { logout } from "../../pages/login/loginAction";
 
 export const getUserInfo = () => async (dispatch) => {
   try {
@@ -7,7 +8,6 @@ export const getUserInfo = () => async (dispatch) => {
     dispatch(getUserSuccess(user));
   } catch (err) {
     console.log(err);
-    dispatch(loginFail(err.message));
-    // localStorage.removeItem("token");
+    dispatch(logout(err.message));
   }
 };

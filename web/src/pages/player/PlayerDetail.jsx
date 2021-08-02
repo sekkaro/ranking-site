@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import {
   CardContent,
   Card,
@@ -16,8 +16,13 @@ import EditIcon from "@material-ui/icons/Edit";
 import DoneIcon from "@material-ui/icons/Done";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
-import { editPlayer, fetchPlayerDetail } from "./playerDetailAction";
+import {
+  deletePlayerDetail,
+  editPlayer,
+  fetchPlayerDetail,
+} from "./playerDetailAction";
 import Alert from "../../components/alert/Alert";
+import ConfirmDialog from "../../components/dialog/ConfirmDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,14 +63,22 @@ const reducer = (state, action) => {
 
 const PlayerDetail = () => {
   const classes = useStyles();
+  const history = useHistory();
   const { id } = useParams();
-  const { player, isLoading, isEditLoading, editError } = useSelector(
-    (state) => state.playerDetail
-  );
+  const {
+    player,
+    isLoading,
+    isEditLoading,
+    editError,
+    isDeleteLoading,
+    deleteError,
+    error,
+  } = useSelector((state) => state.playerDetail);
   const dispatch = useDispatch();
   const [isEdit, setIsEdit] = useState(false);
   const [state, playerDispatch] = useReducer(reducer, initialState);
-  const [open, setOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPlayerDetail(id));
@@ -81,15 +94,29 @@ const PlayerDetail = () => {
     if (editError) {
       alert(editError);
       playerDispatch({ type: "FETCH", data: player });
+    } else if (deleteError) {
+      alert(deleteError);
     }
-  }, [editError, player]);
+  }, [editError, deleteError, player]);
 
   const editHandler = () => {
     setIsEdit((prev) => !prev);
     if (isEdit) {
-      dispatch(editPlayer(state.player, setOpen));
+      dispatch(editPlayer(state.player, setAlertOpen));
     }
   };
+
+  const deleteHandler = () => {
+    if (isEdit) {
+      setIsEdit(false);
+    } else {
+      setDialogOpen(true);
+    }
+  };
+
+  if (error) {
+    return <div className={classes.root}>player not found</div>;
+  }
 
   if (isLoading) {
     return (
@@ -102,14 +129,23 @@ const PlayerDetail = () => {
   return (
     <div className={classes.root}>
       <Snackbar
-        open={open}
+        open={alertOpen}
         autoHideDuration={3000}
-        onClose={() => setOpen(false)}
+        onClose={() => setAlertOpen(false)}
       >
-        <Alert onClose={() => setOpen(false)} severity="success">
+        <Alert onClose={() => setAlertOpen(false)} severity="success">
           수정되었습니다!
         </Alert>
       </Snackbar>
+      <ConfirmDialog
+        open={dialogOpen}
+        title="이 선수를 지우시겠습니까?"
+        onClose={() => setDialogOpen(false)}
+        onSuccess={() => {
+          setDialogOpen(false);
+          dispatch(deletePlayerDetail(id, history));
+        }}
+      />
       <Card className={classes.card}>
         <CardHeader
           action={
@@ -121,16 +157,13 @@ const PlayerDetail = () => {
                   {isEdit ? <DoneIcon /> : <EditIcon />}
                 </IconButton>
               )}
-              <IconButton
-                aria-label="delete"
-                onClick={() => {
-                  if (isEdit) {
-                    setIsEdit(false);
-                  }
-                }}
-              >
-                {isEdit ? <CloseIcon /> : <DeleteIcon />}
-              </IconButton>
+              {isDeleteLoading ? (
+                <CircularProgress />
+              ) : (
+                <IconButton aria-label="delete" onClick={deleteHandler}>
+                  {isEdit ? <CloseIcon /> : <DeleteIcon />}
+                </IconButton>
+              )}
             </>
           }
           title={player?.name}

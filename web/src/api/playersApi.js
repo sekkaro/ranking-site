@@ -81,3 +81,25 @@ export const editPlayerDetail = (player) =>
       reject(err);
     }
   });
+
+export const deletePlayer = (id) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const token = localStorage.getItem("token");
+      const result = await axios.delete(`${playersUri}/${id}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      if (result.data.message) {
+        throw new Error(result.data.message);
+      }
+
+      // console.log(result.data);
+
+      resolve(result.data);
+    } catch (err) {
+      reject(err);
+    }
+  });

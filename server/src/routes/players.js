@@ -92,4 +92,18 @@ router.put("/:id/edit", userAuth, async (req, res) => {
   }
 });
 
+// delete a player
+router.delete("/:id", userAuth, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    await Player.findByIdAndDelete(id);
+
+    res.json({ status: "success" });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: err.message });
+  }
+});
+
 export default router;

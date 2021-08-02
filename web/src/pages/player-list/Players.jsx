@@ -58,8 +58,8 @@ const Players = ({ location }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchPlayers(history, page, q, sort, type));
-  }, [dispatch, history, page, q, sort, type]);
+    dispatch(fetchPlayers(page, q, sort, type));
+  }, [dispatch, page, q, sort, type]);
 
   const handlePageChange = (_, page) => {
     history.push({ search: qs.stringify({ ...queryParams, page }) });

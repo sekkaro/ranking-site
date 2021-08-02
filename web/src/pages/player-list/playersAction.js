@@ -1,5 +1,5 @@
 import { getAllPlayers } from "../../api/playersApi";
-import { loginFail } from "../admin/authSlice";
+import { logout } from "../login/loginAction";
 import {
   fetchPlayersFail,
   fetchPlayersPending,
@@ -7,7 +7,7 @@ import {
 } from "./playersSlice";
 
 export const fetchPlayers =
-  (history, page = 0, keyword = "", sort = "", type = "") =>
+  (page = 0, keyword = "", sort = "", type = "") =>
   async (dispatch) => {
     try {
       dispatch(fetchPlayersPending());
@@ -16,10 +16,10 @@ export const fetchPlayers =
     } catch (err) {
       console.log(err);
       if (err.message === "Forbidden") {
-        dispatch(loginFail(err.message));
-        // localStorage.removeItem("token");
-        // history.push("/login");
+        dispatch(logout(err.message));
+        dispatch(fetchPlayersFail(""));
+      } else {
+        dispatch(fetchPlayersFail(err.message));
       }
-      dispatch(fetchPlayersFail(err.message));
     }
   };
