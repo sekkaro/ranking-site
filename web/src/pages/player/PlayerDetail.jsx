@@ -10,11 +10,14 @@ import {
   makeStyles,
   Typography,
   Input,
+  Snackbar,
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import DoneIcon from "@material-ui/icons/Done";
 import DeleteIcon from "@material-ui/icons/Delete";
+import CloseIcon from "@material-ui/icons/Close";
 import { editPlayer, fetchPlayerDetail } from "./playerDetailAction";
+import Alert from "../../components/alert/Alert";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,6 +65,7 @@ const PlayerDetail = () => {
   const dispatch = useDispatch();
   const [isEdit, setIsEdit] = useState(false);
   const [state, playerDispatch] = useReducer(reducer, initialState);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPlayerDetail(id));
@@ -78,7 +82,14 @@ const PlayerDetail = () => {
       alert(editError);
       playerDispatch({ type: "FETCH", data: player });
     }
-  }, [editError]);
+  }, [editError, player]);
+
+  const editHandler = () => {
+    setIsEdit((prev) => !prev);
+    if (isEdit) {
+      dispatch(editPlayer(state.player, setOpen));
+    }
+  };
 
   if (isLoading) {
     return (
@@ -90,6 +101,15 @@ const PlayerDetail = () => {
 
   return (
     <div className={classes.root}>
+      <Snackbar
+        open={open}
+        autoHideDuration={3000}
+        onClose={() => setOpen(false)}
+      >
+        <Alert onClose={() => setOpen(false)} severity="success">
+          수정되었습니다!
+        </Alert>
+      </Snackbar>
       <Card className={classes.card}>
         <CardHeader
           action={
@@ -97,20 +117,19 @@ const PlayerDetail = () => {
               {isEditLoading ? (
                 <CircularProgress />
               ) : (
-                <IconButton
-                  aria-label="edit"
-                  onClick={() => {
-                    setIsEdit((prev) => !prev);
-                    if (isEdit) {
-                      dispatch(editPlayer(state.player));
-                    }
-                  }}
-                >
+                <IconButton aria-label="edit" onClick={editHandler}>
                   {isEdit ? <DoneIcon /> : <EditIcon />}
                 </IconButton>
               )}
-              <IconButton aria-label="delete">
-                <DeleteIcon />
+              <IconButton
+                aria-label="delete"
+                onClick={() => {
+                  if (isEdit) {
+                    setIsEdit(false);
+                  }
+                }}
+              >
+                {isEdit ? <CloseIcon /> : <DeleteIcon />}
               </IconButton>
             </>
           }

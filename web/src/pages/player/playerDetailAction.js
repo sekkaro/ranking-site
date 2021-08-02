@@ -23,11 +23,12 @@ export const fetchPlayerDetail = (id) => async (dispatch) => {
   }
 };
 
-export const editPlayer = (player) => async (dispatch) => {
+export const editPlayer = (player, setOpen) => async (dispatch) => {
   try {
     dispatch(editPlayerPending());
     await editPlayerDetail(player);
     dispatch(editPlayerSuccess());
+    setOpen(true);
   } catch (err) {
     console.log(err);
     if (err.message === "Forbidden") {
