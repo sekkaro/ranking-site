@@ -13,8 +13,8 @@ router.post("/", async (req, res) => {
       name,
     });
 
-    await league.save();
-    res.json({ status: "success" });
+    const newLeague = await league.save();
+    res.json(newLeague);
   } catch (err) {
     console.log(err);
     res.json({ message: err.message });
