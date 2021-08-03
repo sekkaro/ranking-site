@@ -56,7 +56,7 @@ export const createLeague = (name) =>
     }
   });
 
-  export const editLeague = (id, name) =>
+export const editLeague = (id, name) =>
   new Promise(async (resolve, reject) => {
     try {
       const token = localStorage.getItem("token");
@@ -71,6 +71,28 @@ export const createLeague = (name) =>
           },
         }
       );
+
+      if (result.data.message) {
+        throw new Error(result.data.message);
+      }
+
+      // console.log(result.data);
+
+      resolve(result.data);
+    } catch (err) {
+      reject(err);
+    }
+  });
+
+export const deleteLeague = (id) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const token = localStorage.getItem("token");
+      const result = await axios.delete(`${leaguesUri}/${id}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
 
       if (result.data.message) {
         throw new Error(result.data.message);

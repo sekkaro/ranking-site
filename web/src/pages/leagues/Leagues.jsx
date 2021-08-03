@@ -24,10 +24,16 @@ import DoneIcon from "@material-ui/icons/Done";
 import CloseIcon from "@material-ui/icons/Close";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { useDispatch, useSelector } from "react-redux";
-import { addLeague, changeLeague, fetchLeagues } from "./leaguesAction";
+import {
+  addLeague,
+  changeLeague,
+  fetchLeagues,
+  removeLeague,
+} from "./leaguesAction";
 import { limit } from "../../constants";
 import Pagination from "@material-ui/lab/Pagination";
 import Alert from "../../components/alert/Alert";
+import ConfirmDialog from "../../components/dialog/ConfirmDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,6 +67,8 @@ const Leagues = ({ location }) => {
     addError,
     isEditLoading,
     editError,
+    isDeleteLoading,
+    deleteError,
   } = useSelector((state) => state.leagues);
   const queryParams = qs.parse(location.search);
   const page = parseInt(queryParams.page || 1);
@@ -70,6 +78,7 @@ const Leagues = ({ location }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [id, setId] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchLeagues(page, q));
@@ -107,6 +116,7 @@ const Leagues = ({ location }) => {
       dispatch(changeLeague(id, name, setName, setIsEdit, setAlertOpen));
     } else {
       dispatch(addLeague(name, setName, setAlertOpen));
+      dispatch(fetchLeagues(page, q));
     }
   };
 
@@ -125,11 +135,27 @@ const Leagues = ({ location }) => {
       >
         <Alert
           onClose={() => setAlertOpen(false)}
-          severity={addError || editError ? "error" : "success"}
+          severity={addError || editError || deleteError ? "error" : "success"}
         >
-          {editError ? editError : addError ? addError : "정상 처리되었습니다"}
+          {editError
+            ? editError
+            : addError
+            ? addError
+            : deleteError
+            ? deleteError
+            : "정상 처리되었습니다"}
         </Alert>
       </Snackbar>
+      <ConfirmDialog
+        open={dialogOpen}
+        title="이 리그를 지우시겠습니까?"
+        onClose={() => setDialogOpen(false)}
+        onSuccess={() => {
+          setDialogOpen(false);
+          dispatch(removeLeague(id, setAlertOpen));
+          dispatch(fetchLeagues(page, q));
+        }}
+      />
       <TableContainer className={classes.tableContainer}>
         <div className={classes.search}>
           <Input
@@ -181,9 +207,18 @@ const Leagues = ({ location }) => {
                     >
                       <EditIcon />
                     </IconButton>
-                    <IconButton>
-                      <DeleteIcon />
-                    </IconButton>
+                    {isDeleteLoading ? (
+                      <CircularProgress />
+                    ) : (
+                      <IconButton
+                        onClick={() => {
+                          setDialogOpen(true);
+                          setId(p._id);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </TableCell>
                 </TableRow>
               ))

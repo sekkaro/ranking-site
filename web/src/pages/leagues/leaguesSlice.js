@@ -4,10 +4,12 @@ const initialState = {
   isLoading: true,
   isAddLoading: false,
   isEditLoading: false,
+  isDeleteLoading: false,
   leagues: [],
   error: null,
   addError: null,
   editError: null,
+  deleteError: null,
   count: 0,
 };
 
@@ -34,8 +36,8 @@ export const leaguesSlice = createSlice({
     },
     addLeagueSuccess: (state, { payload }) => {
       state.isAddLoading = false;
-      state.leagues = [payload, ...state.leagues.slice(0, -1)];
-      state.count += 1;
+      // state.leagues = [payload, ...state.leagues.slice(0, -1)];
+      // state.count += 1;
     },
     addLeagueFail: (state, { payload }) => {
       state.isAddLoading = false;
@@ -56,6 +58,17 @@ export const leaguesSlice = createSlice({
       state.isEditLoading = false;
       state.editError = payload;
     },
+    deleteLeaguePending: (state) => {
+      state.isDeleteLoading = true;
+      state.deleteError = null;
+    },
+    deleteLeagueSuccess: (state) => {
+      state.isDeleteLoading = false;
+    },
+    deleteLeagueFail: (state, { payload }) => {
+      state.isDeleteLoading = false;
+      state.deleteError = payload;
+    },
   },
 });
 
@@ -69,6 +82,9 @@ export const {
   editLeagueFail,
   editLeaguePending,
   editLeagueSuccess,
+  deleteLeagueFail,
+  deleteLeaguePending,
+  deleteLeagueSuccess,
 } = leaguesSlice.actions;
 
 export default leaguesSlice.reducer;

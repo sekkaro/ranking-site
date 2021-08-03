@@ -74,7 +74,7 @@ router.delete("/:id", userAuth, async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Player.findByIdAndDelete(id);
+    await League.findByIdAndDelete(id);
 
     res.json({ status: "success" });
   } catch (err) {
