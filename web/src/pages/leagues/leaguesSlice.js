@@ -3,9 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isLoading: true,
   isAddLoading: false,
+  isEditLoading: false,
   leagues: [],
   error: null,
   addError: null,
+  editError: null,
   count: 0,
 };
 
@@ -31,13 +33,28 @@ export const leaguesSlice = createSlice({
       state.addError = null;
     },
     addLeagueSuccess: (state, { payload }) => {
-      state.isLoading = false;
+      state.isAddLoading = false;
       state.leagues = [payload, ...state.leagues.slice(0, -1)];
       state.count += 1;
     },
     addLeagueFail: (state, { payload }) => {
       state.isAddLoading = false;
       state.addError = payload;
+    },
+    editLeaguePending: (state) => {
+      state.isEditLoading = true;
+      state.editError = null;
+    },
+    editLeagueSuccess: (state, { payload }) => {
+      state.isEditLoading = false;
+      const idx = state.leagues.findIndex(
+        (league) => league._id === payload._id
+      );
+      state.leagues[idx] = payload;
+    },
+    editLeagueFail: (state, { payload }) => {
+      state.isEditLoading = false;
+      state.editError = payload;
     },
   },
 });
@@ -49,6 +66,9 @@ export const {
   addLeagueFail,
   addLeaguePending,
   addLeagueSuccess,
+  editLeagueFail,
+  editLeaguePending,
+  editLeagueSuccess,
 } = leaguesSlice.actions;
 
 export default leaguesSlice.reducer;

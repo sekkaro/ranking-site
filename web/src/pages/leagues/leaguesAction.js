@@ -1,9 +1,12 @@
-import { createLeague, getAllLeagues } from "../../api/leaguesApi";
+import { createLeague, editLeague, getAllLeagues } from "../../api/leaguesApi";
 import { logout } from "../login/loginAction";
 import {
   addLeagueFail,
   addLeaguePending,
   addLeagueSuccess,
+  editLeagueFail,
+  editLeaguePending,
+  editLeagueSuccess,
   fetchLeaguesFail,
   fetchLeaguesPending,
   fetchLeaguesSuccess,
@@ -45,3 +48,24 @@ export const addLeague = (name, setName, setAlertOpen) => async (dispatch) => {
     }
   }
 };
+
+export const changeLeague =
+  (id, name, setName, setIsEdit, setAlertOpen) => async (dispatch) => {
+    try {
+      dispatch(editLeaguePending());
+      const league = await editLeague(id, name);
+      dispatch(editLeagueSuccess(league));
+      setName("");
+      setIsEdit(false);
+      setAlertOpen(true);
+    } catch (err) {
+      console.log(err);
+      if (err.message === "Forbidden") {
+        dispatch(logout(err.message));
+        dispatch(editLeagueFail(""));
+      } else {
+        dispatch(editLeagueFail(err.message));
+        setAlertOpen(true);
+      }
+    }
+  };

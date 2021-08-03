@@ -17,10 +17,14 @@ import {
   Snackbar,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
+import DoneIcon from "@material-ui/icons/Done";
+import CloseIcon from "@material-ui/icons/Close";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { useDispatch, useSelector } from "react-redux";
-import { addLeague, fetchLeagues } from "./leaguesAction";
+import { addLeague, changeLeague, fetchLeagues } from "./leaguesAction";
 import { limit } from "../../constants";
 import Pagination from "@material-ui/lab/Pagination";
 import Alert from "../../components/alert/Alert";
@@ -48,13 +52,23 @@ const Leagues = ({ location }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { isLoading, isAddLoading, leagues, error, count, addError } =
-    useSelector((state) => state.leagues);
+  const {
+    isLoading,
+    isAddLoading,
+    leagues,
+    error,
+    count,
+    addError,
+    isEditLoading,
+    editError,
+  } = useSelector((state) => state.leagues);
   const queryParams = qs.parse(location.search);
   const page = parseInt(queryParams.page || 1);
   const { q } = queryParams;
   const [keyword, setKeyword] = useState(q || "");
   const [name, setName] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
+  const [id, setId] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
 
   useEffect(() => {
@@ -89,7 +103,17 @@ const Leagues = ({ location }) => {
 
   const onAdd = (e) => {
     e.preventDefault();
-    dispatch(addLeague(name, setName, setAlertOpen));
+    if (isEdit && id) {
+      dispatch(changeLeague(id, name, setName, setIsEdit, setAlertOpen));
+    } else {
+      dispatch(addLeague(name, setName, setAlertOpen));
+    }
+  };
+
+  const onEdit = (id, name) => {
+    setIsEdit(true);
+    setId(id);
+    setName(name);
   };
 
   return (
@@ -101,9 +125,9 @@ const Leagues = ({ location }) => {
       >
         <Alert
           onClose={() => setAlertOpen(false)}
-          severity={addError ? "error" : "success"}
+          severity={addError || editError ? "error" : "success"}
         >
-          {addError ? addError : "추가되었습니다"}
+          {editError ? editError : addError ? addError : "정상 처리되었습니다"}
         </Alert>
       </Snackbar>
       <TableContainer className={classes.tableContainer}>
@@ -132,12 +156,13 @@ const Leagues = ({ location }) => {
             <TableRow>
               <TableCell>#</TableCell>
               <TableCell>Name</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={limit}>
+                <TableCell rowSpan={limit} colSpan={limit}>
                   <CircularProgress />
                 </TableCell>
               </TableRow>
@@ -147,6 +172,18 @@ const Leagues = ({ location }) => {
                   <TableCell>{limit * (page - 1) + idx + 1}</TableCell>
                   <TableCell component="th" scope="row">
                     {p.name}
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      onClick={() => {
+                        onEdit(p._id, p.name);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton>
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))
@@ -171,6 +208,25 @@ const Leagues = ({ location }) => {
         />
         {isAddLoading ? (
           <CircularProgress />
+        ) : isEdit ? (
+          <>
+            {isEditLoading ? (
+              <CircularProgress />
+            ) : (
+              <IconButton type="submit">
+                <DoneIcon />
+              </IconButton>
+            )}
+            <IconButton
+              onClick={() => {
+                setIsEdit(false);
+                setName("");
+                setId(null);
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </>
         ) : (
           <IconButton type="submit">
             <AddIcon />

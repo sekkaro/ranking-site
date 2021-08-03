@@ -61,9 +61,8 @@ router.put("/:id/edit", userAuth, async (req, res) => {
     const id = req.params.id;
     const { name } = req.body;
 
-    await Player.findByIdAndUpdate(id, { name });
-
-    res.json({ status: "success" });
+    const league = await League.findByIdAndUpdate(id, { name }, { new: true });
+    res.json(league);
   } catch (err) {
     console.log(err);
     res.json({ message: err.message });
