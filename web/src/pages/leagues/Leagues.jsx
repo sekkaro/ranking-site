@@ -115,8 +115,9 @@ const Leagues = ({ location }) => {
     if (isEdit && id) {
       dispatch(changeLeague(id, name, setName, setIsEdit, setAlertOpen));
     } else {
-      dispatch(addLeague(name, setName, setAlertOpen));
-      dispatch(fetchLeagues(page, q));
+      dispatch(addLeague(name, setName, setAlertOpen)).then(() => {
+        dispatch(fetchLeagues(page, q));
+      });
     }
   };
 
@@ -152,8 +153,13 @@ const Leagues = ({ location }) => {
         onClose={() => setDialogOpen(false)}
         onSuccess={() => {
           setDialogOpen(false);
-          dispatch(removeLeague(id, setAlertOpen));
-          dispatch(fetchLeagues(page, q));
+          dispatch(removeLeague(id, setAlertOpen)).then(() => {
+            if (leagues.length === 1 && page > 1) {
+              handlePageChange(null, page - 1);
+            } else {
+              dispatch(fetchLeagues(page, q));
+            }
+          });
         }}
       />
       <TableContainer className={classes.tableContainer}>
@@ -192,7 +198,7 @@ const Leagues = ({ location }) => {
                   <CircularProgress />
                 </TableCell>
               </TableRow>
-            ) : (
+            ) : leagues.length > 0 ? (
               leagues.map((p, idx) => (
                 <TableRow key={p._id}>
                   <TableCell>{limit * (page - 1) + idx + 1}</TableCell>
@@ -222,6 +228,12 @@ const Leagues = ({ location }) => {
                   </TableCell>
                 </TableRow>
               ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={3} rowSpan={3}>
+                  리그가 없습니다
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>

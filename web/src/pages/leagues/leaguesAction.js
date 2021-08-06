@@ -38,24 +38,27 @@ export const fetchLeagues =
     }
   };
 
-export const addLeague = (name, setName, setAlertOpen) => async (dispatch) => {
-  try {
-    dispatch(addLeaguePending());
-    const league = await createLeague(name);
-    dispatch(addLeagueSuccess(league));
-    setName("");
-    setAlertOpen(true);
-  } catch (err) {
-    console.log(err);
-    if (err.message === "Forbidden") {
-      dispatch(logout(err.message));
-      dispatch(addLeagueFail(""));
-    } else {
-      dispatch(addLeagueFail(err.message));
+export const addLeague = (name, setName, setAlertOpen) => (dispatch) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      dispatch(addLeaguePending());
+      const league = await createLeague(name);
+      dispatch(addLeagueSuccess(league));
+      setName("");
       setAlertOpen(true);
+      resolve(league);
+    } catch (err) {
+      console.log(err);
+      if (err.message === "Forbidden") {
+        dispatch(logout(err.message));
+        dispatch(addLeagueFail(""));
+      } else {
+        dispatch(addLeagueFail(err.message));
+        setAlertOpen(true);
+      }
+      reject();
     }
-  }
-};
+  });
 
 export const changeLeague =
   (id, name, setName, setIsEdit, setAlertOpen) => async (dispatch) => {
@@ -78,20 +81,23 @@ export const changeLeague =
     }
   };
 
-export const removeLeague = (id, setAlertOpen) => async (dispatch) => {
-  try {
-    dispatch(deleteLeaguePending());
-    await deleteLeague(id);
-    dispatch(deleteLeagueSuccess());
-    setAlertOpen(true);
-  } catch (err) {
-    console.log(err);
-    if (err.message === "Forbidden") {
-      dispatch(logout(err.message));
-      dispatch(deleteLeagueFail(""));
-    } else {
-      dispatch(deleteLeagueFail(err.message));
+export const removeLeague = (id, setAlertOpen) => (dispatch) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      dispatch(deleteLeaguePending());
+      await deleteLeague(id);
+      dispatch(deleteLeagueSuccess());
       setAlertOpen(true);
+      resolve();
+    } catch (err) {
+      console.log(err);
+      if (err.message === "Forbidden") {
+        dispatch(logout(err.message));
+        dispatch(deleteLeagueFail(""));
+      } else {
+        dispatch(deleteLeagueFail(err.message));
+        setAlertOpen(true);
+      }
+      reject();
     }
-  }
-};
+  });
