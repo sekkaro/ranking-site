@@ -5,11 +5,14 @@ const initialState = {
   isAddLoading: false,
   isEditLoading: false,
   isDeleteLoading: false,
+  isLeagueLoading: true,
   teams: [],
+  leagues: [],
   error: null,
   addError: null,
   editError: null,
   deleteError: null,
+  leagueError: null,
   count: 0,
 };
 
@@ -29,6 +32,18 @@ export const teamsSlice = createSlice({
     fetchTeamsFail: (state, { payload }) => {
       state.isLoading = false;
       state.error = payload;
+    },
+    fetchLeagueNamesPending: (state) => {
+      state.isLeagueLoading = true;
+      state.leagueError = null;
+    },
+    fetchLeagueNamesSuccess: (state, { payload }) => {
+      state.isLeagueLoading = false;
+      state.leagues = payload.leagues;
+    },
+    fetchLeagueNamesFail: (state, { payload }) => {
+      state.isLeagueLoading = false;
+      state.leagueError = payload;
     },
     addTeamPending: (state) => {
       state.isAddLoading = true;
@@ -83,6 +98,9 @@ export const {
   deleteTeamFail,
   deleteTeamPending,
   deleteTeamSuccess,
+  fetchLeagueNamesFail,
+  fetchLeagueNamesPending,
+  fetchLeagueNamesSuccess,
 } = teamsSlice.actions;
 
 export default teamsSlice.reducer;

@@ -5,12 +5,13 @@ import Team from "../models/Team";
 const router = express.Router();
 
 // create new team
-router.post("/", async (req, res) => {
+router.post("/", userAuth, async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, league } = req.body;
 
     const team = new Team({
       name,
+      league,
     });
 
     const newTeam = await team.save();
@@ -47,8 +48,11 @@ router.get("/", userAuth, async (req, res) => {
           createdAt: "desc",
         },
       }
-    );
-    res.json({ teams: result, count: Math.ceil(count / limit) });
+    ).populate("league");
+    res.json({
+      teams: result,
+      count: Math.ceil(count / limit),
+    });
   } catch (err) {
     console.log(err);
     res.json({ message: err.message });
@@ -59,9 +63,13 @@ router.get("/", userAuth, async (req, res) => {
 router.put("/:id/edit", userAuth, async (req, res) => {
   try {
     const id = req.params.id;
-    const { name } = req.body;
+    const { name, league } = req.body;
 
-    const team = await Team.findByIdAndUpdate(id, { name }, { new: true });
+    const team = await Team.findByIdAndUpdate(
+      id,
+      { name, league },
+      { new: true }
+    ).populate("league");
     res.json(team);
   } catch (err) {
     console.log(err);

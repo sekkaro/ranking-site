@@ -28,7 +28,7 @@ export const getAllTeams = (page, keyword) =>
     }
   });
 
-export const createTeam = (name) =>
+export const createTeam = (name, league) =>
   new Promise(async (resolve, reject) => {
     try {
       const token = localStorage.getItem("token");
@@ -36,6 +36,7 @@ export const createTeam = (name) =>
         teamsUri,
         {
           name,
+          league,
         },
         {
           headers: {
@@ -56,7 +57,7 @@ export const createTeam = (name) =>
     }
   });
 
-export const editTeam = (id, name) =>
+export const editTeam = (id, name, league) =>
   new Promise(async (resolve, reject) => {
     try {
       const token = localStorage.getItem("token");
@@ -64,6 +65,7 @@ export const editTeam = (id, name) =>
         `${teamsUri}/${id}/edit`,
         {
           name,
+          league,
         },
         {
           headers: {

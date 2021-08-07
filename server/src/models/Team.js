@@ -9,6 +9,7 @@ const TeamSchema = new mongoose.Schema(
     },
     league: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "League",
     },
   },
   { timestamps: true }

@@ -5,7 +5,7 @@ import League from "../models/League";
 const router = express.Router();
 
 // create new league
-router.post("/", async (req, res) => {
+router.post("/", userAuth, async (req, res) => {
   try {
     const { name } = req.body;
 
@@ -49,6 +49,17 @@ router.get("/", userAuth, async (req, res) => {
       }
     );
     res.json({ leagues: result, count: Math.ceil(count / limit) });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: err.message });
+  }
+});
+
+// get all league names
+router.get("/fast", userAuth, async (req, res) => {
+  try {
+    const result = await League.find({}).select("name");
+    res.json({ leagues: result });
   } catch (err) {
     console.log(err);
     res.json({ message: err.message });

@@ -28,6 +28,28 @@ export const getAllLeagues = (page, keyword) =>
     }
   });
 
+export const getAllLeaguesFast = () =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const token = localStorage.getItem("token");
+      const result = await axios.get(`${leaguesUri}/fast`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      if (result.data.message) {
+        throw new Error(result.data.message);
+      }
+
+      // console.log(result.data);
+
+      resolve(result.data);
+    } catch (err) {
+      reject(err);
+    }
+  });
+
 export const createLeague = (name) =>
   new Promise(async (resolve, reject) => {
     try {

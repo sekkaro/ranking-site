@@ -1,3 +1,4 @@
+import { getAllLeaguesFast } from "../../api/leaguesApi";
 import {
   createTeam,
   deleteTeam,
@@ -15,6 +16,9 @@ import {
   editTeamFail,
   editTeamPending,
   editTeamSuccess,
+  fetchLeagueNamesFail,
+  fetchLeagueNamesPending,
+  fetchLeagueNamesSuccess,
   fetchTeamsFail,
   fetchTeamsPending,
   fetchTeamsSuccess,
@@ -38,15 +42,18 @@ export const fetchTeams =
     }
   };
 
-export const addTeam = (name, setName, setAlertOpen) => (dispatch) =>
+export const addTeam = (team, setTeam, setAlertOpen) => (dispatch) =>
   new Promise(async (resolve, reject) => {
     try {
       dispatch(addTeamPending());
-      const team = await createTeam(name);
-      dispatch(addTeamSuccess(team));
-      setName("");
+      const newTeam = await createTeam(team.name, team.league);
+      dispatch(addTeamSuccess(newTeam));
+      setTeam({
+        name: "",
+        league: "",
+      });
       setAlertOpen(true);
-      resolve(team);
+      resolve(newTeam);
     } catch (err) {
       console.log(err);
       if (err.message === "Forbidden") {
@@ -61,12 +68,15 @@ export const addTeam = (name, setName, setAlertOpen) => (dispatch) =>
   });
 
 export const changeTeam =
-  (id, name, setName, setIsEdit, setAlertOpen) => async (dispatch) => {
+  (id, team, setTeam, setIsEdit, setAlertOpen) => async (dispatch) => {
     try {
       dispatch(editTeamPending());
-      const team = await editTeam(id, name);
-      dispatch(editTeamSuccess(team));
-      setName("");
+      const editedTeam = await editTeam(id, team.name, team.league);
+      dispatch(editTeamSuccess(editedTeam));
+      setTeam({
+        name: "",
+        league: "",
+      });
       setIsEdit(false);
       setAlertOpen(true);
     } catch (err) {
@@ -101,3 +111,19 @@ export const removeTeam = (id, setAlertOpen) => (dispatch) =>
       reject();
     }
   });
+
+export const fetchLeagueNames = () => async (dispatch) => {
+  try {
+    dispatch(fetchLeagueNamesPending());
+    const teams = await getAllLeaguesFast();
+    dispatch(fetchLeagueNamesSuccess(teams));
+  } catch (err) {
+    console.log(err);
+    if (err.message === "Forbidden") {
+      dispatch(logout(err.message));
+      dispatch(fetchLeagueNamesFail(""));
+    } else {
+      dispatch(fetchLeagueNamesFail(err.message));
+    }
+  }
+};

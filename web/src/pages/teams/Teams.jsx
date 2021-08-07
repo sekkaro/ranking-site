@@ -12,6 +12,8 @@ import {
   Snackbar,
   TableCell,
   TableRow,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import EditIcon from "@material-ui/icons/Edit";
@@ -24,7 +26,13 @@ import { useDispatch, useSelector } from "react-redux";
 import Pagination from "@material-ui/lab/Pagination";
 import Alert from "../../components/alert/Alert";
 import ConfirmDialog from "../../components/dialog/ConfirmDialog";
-import { addTeam, changeTeam, fetchTeams, removeTeam } from "./teamsAction";
+import {
+  addTeam,
+  changeTeam,
+  fetchLeagueNames,
+  fetchTeams,
+  removeTeam,
+} from "./teamsAction";
 import CustomTable from "../../components/table/CustomTable";
 import { limit } from "../../constants";
 
@@ -54,12 +62,15 @@ const Teams = ({ location }) => {
   const {
     isLoading,
     isAddLoading,
+    isLeagueLoading,
     teams,
     error,
+    leagues,
     count,
     addError,
     isEditLoading,
     editError,
+    leagueError,
     isDeleteLoading,
     deleteError,
   } = useSelector((state) => state.teams);
@@ -67,7 +78,10 @@ const Teams = ({ location }) => {
   const page = parseInt(queryParams.page || 1);
   const { q } = queryParams;
   const [keyword, setKeyword] = useState(q || "");
-  const [name, setName] = useState("");
+  const [team, setTeam] = useState({
+    name: "",
+    league: "",
+  });
   const [isEdit, setIsEdit] = useState(false);
   const [id, setId] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
@@ -77,6 +91,10 @@ const Teams = ({ location }) => {
     dispatch(fetchTeams(page, q));
   }, [dispatch, page, q]);
 
+  useEffect(() => {
+    dispatch(fetchLeagueNames());
+  }, [dispatch]);
+
   const handlePageChange = (_, page) => {
     history.push({ search: qs.stringify({ ...queryParams, page }) });
   };
@@ -85,8 +103,8 @@ const Teams = ({ location }) => {
     const { name, value } = e.target;
     if (name === "keyword") {
       setKeyword(value);
-    } else if (name === "name") {
-      setName(value);
+    } else {
+      setTeam((team) => ({ ...team, [name]: value }));
     }
   };
 
@@ -106,18 +124,18 @@ const Teams = ({ location }) => {
   const onAdd = (e) => {
     e.preventDefault();
     if (isEdit && id) {
-      dispatch(changeTeam(id, name, setName, setIsEdit, setAlertOpen));
+      dispatch(changeTeam(id, team, setTeam, setIsEdit, setAlertOpen));
     } else {
-      dispatch(addTeam(name, setName, setAlertOpen)).then(() => {
+      dispatch(addTeam(team, setTeam, setAlertOpen)).then(() => {
         dispatch(fetchTeams(page, q));
       });
     }
   };
 
-  const onEdit = (id, name) => {
+  const onEdit = (id, name, league) => {
     setIsEdit(true);
     setId(id);
-    setName(name);
+    setTeam({ name, league });
   };
 
   return (
@@ -129,7 +147,11 @@ const Teams = ({ location }) => {
       >
         <Alert
           onClose={() => setAlertOpen(false)}
-          severity={addError || editError || deleteError ? "error" : "success"}
+          severity={
+            addError || editError || deleteError || leagueError
+              ? "error"
+              : "success"
+          }
         >
           {editError
             ? editError
@@ -137,6 +159,8 @@ const Teams = ({ location }) => {
             ? addError
             : deleteError
             ? deleteError
+            : leagueError
+            ? leagueError
             : "정상 처리되었습니다"}
         </Alert>
       </Snackbar>
@@ -178,7 +202,7 @@ const Teams = ({ location }) => {
         </div>
         <CustomTable
           isLoading={isLoading}
-          fields={["#", "name", ""]}
+          fields={["#", "name", "league", ""]}
           data={teams}
           emptyMsg="팀이 없습니다"
           onEdit={onEdit}
@@ -191,10 +215,13 @@ const Teams = ({ location }) => {
               <TableCell component="th" scope="row">
                 {items.name}
               </TableCell>
+              <TableCell component="th" scope="row">
+                {items.league ? items.league.name : "-"}
+              </TableCell>
               <TableCell align="right">
                 <IconButton
                   onClick={() => {
-                    onEdit(items._id, items.name);
+                    onEdit(items._id, items.name, items.league?._id);
                   }}
                 >
                   <EditIcon />
@@ -226,11 +253,27 @@ const Teams = ({ location }) => {
       <form style={{ display: "flex" }} onSubmit={onAdd}>
         <Input
           placeholder="Add team"
-          value={name}
+          value={team.name}
           onChange={handleChange}
           name="name"
           required
         />
+        {isLeagueLoading ? (
+          <CircularProgress />
+        ) : (
+          <Select
+            name="league"
+            value={team.league}
+            onChange={handleChange}
+            required
+          >
+            {leagues.map((league) => (
+              <MenuItem key={league._id} value={league._id}>
+                {league.name}
+              </MenuItem>
+            ))}
+          </Select>
+        )}
         {isAddLoading ? (
           <CircularProgress />
         ) : isEdit ? (
@@ -245,7 +288,10 @@ const Teams = ({ location }) => {
             <IconButton
               onClick={() => {
                 setIsEdit(false);
-                setName("");
+                setTeam({
+                  name: "",
+                  league: "",
+                });
                 setId(null);
               }}
             >
