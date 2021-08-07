@@ -9,8 +9,6 @@ import {
 } from "@material-ui/core";
 import React from "react";
 
-import { limit } from "../../constants";
-
 const CustomTable = ({ isLoading, fields, data, emptyMsg, renderItem }) => {
   const Item = renderItem;
   return (
@@ -25,7 +23,7 @@ const CustomTable = ({ isLoading, fields, data, emptyMsg, renderItem }) => {
       <TableBody>
         {isLoading ? (
           <TableRow>
-            <TableCell rowSpan={limit} colSpan={limit}>
+            <TableCell rowSpan={fields.length} colSpan={fields.length}>
               <CircularProgress />
             </TableCell>
           </TableRow>
@@ -35,7 +33,7 @@ const CustomTable = ({ isLoading, fields, data, emptyMsg, renderItem }) => {
           ))
         ) : (
           <TableRow>
-            <TableCell colSpan={3} rowSpan={3}>
+            <TableCell rowSpan={fields.length} colSpan={fields.length}>
               {emptyMsg}
             </TableCell>
           </TableRow>

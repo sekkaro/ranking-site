@@ -9,7 +9,13 @@ router.post("/", userAuth, async (req, res) => {
   try {
     const { name, league } = req.body;
 
-    const team = new Team({
+    let team = await Team.findOne({ name, league });
+
+    if (team) {
+      return res.json({ message: "Duplicate Error" });
+    }
+
+    team = new Team({
       name,
       league,
     });
@@ -18,7 +24,10 @@ router.post("/", userAuth, async (req, res) => {
     res.json(newTeam);
   } catch (err) {
     console.log(err);
-    res.json({ message: err.message });
+    if (err?.code === 11000) {
+      return res.json({ message: "Duplicate Error" });
+    }
+    res.json({ message: "Server Error" });
   }
 });
 
