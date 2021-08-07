@@ -14,6 +14,7 @@ import {
 } from "@material-ui/core";
 import GroupIcon from "@material-ui/icons/Group";
 import GroupWorkIcon from "@material-ui/icons/GroupWork";
+import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline";
 import MenuIcon from "@material-ui/icons/Menu";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -144,6 +145,18 @@ const Header = ({ isAdmin }) => {
                   <GroupWorkIcon />
                 </ListItemIcon>
                 <ListItemText primary="리그" />
+              </ListItem>
+              <ListItem
+                className={classes.item}
+                component={NavLink}
+                to="/teams"
+                button
+                key="teams"
+              >
+                <ListItemIcon>
+                  <PeopleOutlineIcon />
+                </ListItemIcon>
+                <ListItemText primary="팀" />
               </ListItem>
               {/* {["Inbox", "Starred", "Send email", "Drafts"].map(
                 (text, index) => (
