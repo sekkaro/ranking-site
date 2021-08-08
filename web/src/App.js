@@ -7,6 +7,7 @@ import Leagues from "./pages/leagues/Leagues";
 import Login from "./pages/login/Login";
 import Players from "./pages/player-list/Players";
 import PlayerDetail from "./pages/player/PlayerDetail";
+import Positions from "./pages/positions/Positions";
 import Teams from "./pages/teams/Teams";
 
 function App() {
@@ -34,6 +35,9 @@ function App() {
           </AdminRoute>
           <AdminRoute path="/teams">
             <Teams />
+          </AdminRoute>
+          <AdminRoute path="/positions">
+            <Positions />
           </AdminRoute>
         </Switch>
       </Router>

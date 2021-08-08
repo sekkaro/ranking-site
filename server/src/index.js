@@ -9,6 +9,7 @@ import authRoute from "./routes/auth";
 import playerRoute from "./routes/players";
 import leagueRoute from "./routes/leagues";
 import teamRoute from "./routes/teams";
+import positionRoute from "./routes/positions";
 
 const main = () => {
   const app = express();
@@ -31,6 +32,7 @@ const main = () => {
   app.use("/api/players", playerRoute);
   app.use("/api/leagues", leagueRoute);
   app.use("/api/teams", teamRoute);
+  app.use("/api/positions", positionRoute);
 
   app.listen(port, () => {
     console.log("Backend server is running");
