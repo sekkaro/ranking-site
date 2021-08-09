@@ -103,3 +103,49 @@ export const deletePlayer = (id) =>
       reject(err);
     }
   });
+
+export const createPlayer = (
+  name,
+  team,
+  number,
+  birthday,
+  age,
+  height,
+  weight,
+  origin,
+  position
+) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const token = localStorage.getItem("token");
+      const result = await axios.post(
+        `${playersUri}`,
+        {
+          name,
+          team: team._id,
+          number,
+          birthday,
+          age,
+          height,
+          weight,
+          origin,
+          position,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      if (result.data.message) {
+        throw new Error(result.data.message);
+      }
+
+      // console.log(result.data);
+
+      resolve(result.data);
+    } catch (err) {
+      reject(err);
+    }
+  });

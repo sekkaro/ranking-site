@@ -55,6 +55,17 @@ router.get("/", userAuth, async (req, res) => {
   }
 });
 
+// get all position names
+router.get("/fast", userAuth, async (req, res) => {
+  try {
+    const result = await Position.find({}).select("name");
+    res.json({ positions: result });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: err.message });
+  }
+});
+
 // edit a position
 router.put("/:id/edit", userAuth, async (req, res) => {
   try {

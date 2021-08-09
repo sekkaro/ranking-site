@@ -68,6 +68,20 @@ router.get("/", userAuth, async (req, res) => {
   }
 });
 
+// get all team names
+router.get("/fast", userAuth, async (req, res) => {
+  try {
+    const keyword = req.query.keyword || "";
+    const result = await Team.find({
+      name: { $regex: keyword, $options: "i" },
+    }).select("name");
+    res.json({ teams: result });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: err.message });
+  }
+});
+
 // edit a team
 router.put("/:id/edit", userAuth, async (req, res) => {
   try {

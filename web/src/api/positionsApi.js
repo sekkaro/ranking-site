@@ -28,6 +28,28 @@ export const getAllPositions = (page, keyword) =>
     }
   });
 
+export const getAllPositionsFast = () =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const token = localStorage.getItem("token");
+      const result = await axios.get(`${positionsUri}/fast`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      if (result.data.message) {
+        throw new Error(result.data.message);
+      }
+
+      // console.log(result.data);
+
+      resolve(result.data);
+    } catch (err) {
+      reject(err);
+    }
+  });
+
 export const createPosition = (name) =>
   new Promise(async (resolve, reject) => {
     try {

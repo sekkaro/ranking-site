@@ -3,6 +3,8 @@ import { limit } from "../constants";
 
 const teamsUri = process.env.REACT_APP_API_URI + "/teams";
 
+let cancel;
+
 export const getAllTeams = (page, keyword) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -15,6 +17,31 @@ export const getAllTeams = (page, keyword) =>
           },
         }
       );
+
+      if (result.data.message) {
+        throw new Error(result.data.message);
+      }
+
+      // console.log(result.data);
+
+      resolve(result.data);
+    } catch (err) {
+      reject(err);
+    }
+  });
+
+export const getAllTeamsFast = (keyword) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      cancel && cancel();
+      const CancelToken = axios.CancelToken;
+      const token = localStorage.getItem("token");
+      const result = await axios.get(`${teamsUri}/fast?keyword=${keyword}`, {
+        headers: {
+          Authorization: token,
+        },
+        cancelToken: new CancelToken((canceler) => (cancel = canceler)),
+      });
 
       if (result.data.message) {
         throw new Error(result.data.message);

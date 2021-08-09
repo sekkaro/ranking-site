@@ -6,7 +6,7 @@ import morgan from "morgan";
 import cors from "cors";
 
 import authRoute from "./routes/auth";
-import playerRoute from "./routes/players";
+import profileRoute from "./routes/profiles";
 import leagueRoute from "./routes/leagues";
 import teamRoute from "./routes/teams";
 import positionRoute from "./routes/positions";
@@ -29,7 +29,7 @@ const main = () => {
   const port = process.env.PORT || 3001;
 
   app.use("/api/auth", authRoute);
-  app.use("/api/players", playerRoute);
+  app.use("/api/players", profileRoute);
   app.use("/api/leagues", leagueRoute);
   app.use("/api/teams", teamRoute);
   app.use("/api/positions", positionRoute);
