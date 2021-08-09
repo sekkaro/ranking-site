@@ -133,7 +133,7 @@ const Header = ({ isAdmin }) => {
                 <ListItemIcon>
                   <GroupIcon />
                 </ListItemIcon>
-                <ListItemText primary="players" />
+                <ListItemText primary="선수" />
               </ListItem>
               <ListItem
                 className={classes.item}

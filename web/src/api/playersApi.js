@@ -3,14 +3,14 @@ import { limit } from "../constants";
 
 const playersUri = process.env.REACT_APP_API_URI + "/players";
 
-export const getAllPlayers = (page, keyword, sort, type) =>
+export const getAllPlayers = (page, name, number) =>
   new Promise(async (resolve, reject) => {
     try {
       const token = localStorage.getItem("token");
       const result = await axios.get(
         `${playersUri}?page=${
           page - 1
-        }&limit=${limit}&keyword=${keyword}&sort=${sort}&type=${type}`,
+        }&limit=${limit}&name=${name}&number=${number}`,
         {
           headers: {
             Authorization: token,

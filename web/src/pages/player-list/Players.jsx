@@ -15,14 +15,15 @@ import {
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
-import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
-import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+// import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
+// import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import { NavLink, useHistory, withRouter } from "react-router-dom";
 import qs from "query-string";
 import Pagination from "@material-ui/lab/Pagination";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchPlayers } from "./playersAction";
 import { limit } from "../../constants";
+import CustomTable from "../../components/table/CustomTable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,19 +48,24 @@ const Players = ({ location }) => {
   const history = useHistory();
   const queryParams = qs.parse(location.search);
   const page = parseInt(queryParams.page || 1);
-  const { q, sort, type } = queryParams;
+  const { n, num } = queryParams;
   const { isLoading, players, error, count } = useSelector(
     (state) => state.players
   );
-  const [keyword, setKeyword] = useState(q || "");
-  const [isGoalsClicked, setIsGoalsClicked] = useState(sort === "goals");
-  const [isAssistsClicked, setIsAssistsClicked] = useState(sort === "assists");
-  const [isAsc, setIsAsc] = useState(type === "asc");
+  const [name, setName] = useState(n || "");
+  const [number, setNumber] = useState(num || "");
+  // const [isGoalsClicked, setIsGoalsClicked] = useState(sort === "goals");
+  // const [isAssistsClicked, setIsAssistsClicked] = useState(sort === "assists");
+  // const [isAsc, setIsAsc] = useState(type === "asc");
   const dispatch = useDispatch();
 
+  // useEffect(() => {
+  //   dispatch(fetchPlayers(page, q, sort, type));
+  // }, [dispatch, page, q, sort, type]);
+
   useEffect(() => {
-    dispatch(fetchPlayers(page, q, sort, type));
-  }, [dispatch, page, q, sort, type]);
+    dispatch(fetchPlayers(page, n, num));
+  }, [dispatch, page, n, num]);
 
   const handlePageChange = (_, page) => {
     history.push({ search: qs.stringify({ ...queryParams, page }) });
@@ -67,82 +73,106 @@ const Players = ({ location }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "keyword") {
-      setKeyword(value);
+    if (name === "name") {
+      setName(value);
+    } else if(name === "number") {
+      setNumber(value);
     }
   };
 
   const onSearch = () => {
     history.push({
-      search: qs.stringify({ ...queryParams, q: keyword, page: 1 }),
+      search: qs.stringify({ ...queryParams, n: name, num: number, page: 1 }),
     });
   };
 
-  const onResetKeyword = () => {
-    setKeyword("");
+  const onResetName = () => {
+    setName("");
     history.push({
-      search: qs.stringify({ ...queryParams, q: "" }),
+      search: qs.stringify({ ...queryParams, n: "" }),
     });
   };
 
-  const sortClickHandler = (key) => {
-    let type = "desc";
-    if (key === "goals") {
-      setIsGoalsClicked(true);
-      setIsAssistsClicked(false);
-      if (isGoalsClicked) {
-        setIsAsc((prev) => {
-          if (!prev) {
-            type = "asc";
-          }
-          return !prev;
-        });
-      } else {
-        setIsAsc(false);
-      }
-      history.push({
-        search: qs.stringify({ ...queryParams, sort: key, type }),
-      });
-    } else {
-      setIsAssistsClicked(true);
-      setIsGoalsClicked(false);
-      if (isAssistsClicked) {
-        setIsAsc((prev) => {
-          if (!prev) {
-            type = "asc";
-          }
-          return !prev;
-        });
-      } else {
-        setIsAsc(false);
-      }
-      history.push({
-        search: qs.stringify({ ...queryParams, sort: key, type }),
-      });
-    }
+  const onResetNumber = () => {
+    setNumber("");
+    history.push({
+      search: qs.stringify({ ...queryParams, num: "" }),
+    });
   };
 
-  if (isLoading) {
-    return (
-      <div className={classes.root}>
-        <CircularProgress />
-      </div>
-    );
-  }
+  // const sortClickHandler = (key) => {
+  //   let type = "desc";
+  //   if (key === "goals") {
+  //     setIsGoalsClicked(true);
+  //     setIsAssistsClicked(false);
+  //     if (isGoalsClicked) {
+  //       setIsAsc((prev) => {
+  //         if (!prev) {
+  //           type = "asc";
+  //         }
+  //         return !prev;
+  //       });
+  //     } else {
+  //       setIsAsc(false);
+  //     }
+  //     history.push({
+  //       search: qs.stringify({ ...queryParams, sort: key, type }),
+  //     });
+  //   } else {
+  //     setIsAssistsClicked(true);
+  //     setIsGoalsClicked(false);
+  //     if (isAssistsClicked) {
+  //       setIsAsc((prev) => {
+  //         if (!prev) {
+  //           type = "asc";
+  //         }
+  //         return !prev;
+  //       });
+  //     } else {
+  //       setIsAsc(false);
+  //     }
+  //     history.push({
+  //       search: qs.stringify({ ...queryParams, sort: key, type }),
+  //     });
+  //   }
+  // };
+
+  // if (isLoading) {
+  //   return (
+  //     <div className={classes.root}>
+  //       <CircularProgress />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className={classes.root}>
       <TableContainer className={classes.tableContainer}>
         <div className={classes.search}>
           <Input
-            placeholder="Search name..."
-            value={keyword}
+            placeholder="이름"
+            value={name}
             onChange={handleChange}
-            name="keyword"
+            name="name"
             endAdornment={
-              keyword && (
+              name && (
                 <InputAdornment position="end">
-                  <IconButton onClick={onResetKeyword}>
+                  <IconButton onClick={onResetName}>
+                    <HighlightOffIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }
+          />
+          <Input
+            placeholder="등번호"
+            value={number}
+            onChange={handleChange}
+            name="number"
+            endAdornment={
+              number && (
+                <InputAdornment position="end">
+                  <IconButton onClick={onResetNumber}>
                     <HighlightOffIcon />
                   </IconButton>
                 </InputAdornment>
@@ -153,12 +183,30 @@ const Players = ({ location }) => {
             <SearchIcon />
           </Button>
         </div>
-        <Table>
+        <CustomTable
+          isLoading={isLoading}
+          fields={["#", "소속리그", "팀", "이름", "등번호"]}
+          data={players}
+          emptyMsg="선수가 없습니다"
+          renderItem={({ items, idx }) => (
+            <TableRow key={items._id}>
+              <TableCell>{limit * (page - 1) + idx + 1}</TableCell>
+              <TableCell>{items?.team?.league?.name}</TableCell>
+              <TableCell>{items.team?.name}</TableCell>
+              <TableCell component="th" scope="row">
+                <NavLink to={`/players/${items._id}`}>{items.name}</NavLink>
+              </TableCell>
+              <TableCell>{items.number}</TableCell>
+            </TableRow>
+          )}
+        />
+        {/* <Table>
           <TableHead>
             <TableRow>
               <TableCell>#</TableCell>
-              <TableCell>Name</TableCell>
+              <TableCell>소속리그</TableCell>
               <TableCell>
+                팀
                 <Button
                   style={{ backgroundColor: "transparent" }}
                   disableRipple
@@ -177,6 +225,7 @@ const Players = ({ location }) => {
                 </Button>
               </TableCell>
               <TableCell>
+                이름
                 <Button
                   style={{ backgroundColor: "transparent" }}
                   disableRipple
@@ -194,21 +243,23 @@ const Players = ({ location }) => {
                   Assists
                 </Button>
               </TableCell>
+              <TableCell>등번호</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {players.map((p, idx) => (
               <TableRow key={p._id}>
                 <TableCell>{limit * (page - 1) + idx + 1}</TableCell>
+                <TableCell>{p?.team?.league?.name}</TableCell>
+                <TableCell>{p?.team?.name}</TableCell>
                 <TableCell component="th" scope="row">
                   <NavLink to={`/players/${p._id}`}>{p.name}</NavLink>
                 </TableCell>
-                <TableCell>{p.goals}</TableCell>
-                <TableCell>{p.assists}</TableCell>
+                <TableCell>{p.number}</TableCell>
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+        </Table> */}
         <Pagination
           count={count}
           siblingCount={2}

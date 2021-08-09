@@ -39,6 +39,43 @@ router.post("/", userAuth, async (req, res) => {
   }
 });
 
+// get all profiles (paging)
+router.get("/", userAuth, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 20;
+    const page = parseInt(req.query.page) || 0;
+    const name = req.query.name || "";
+    const number = req.query.number || "";
+    let count;
+    let query = {
+      name: { $regex: name, $options: "i" },
+    };
+    if (number && !isNaN(number)) {
+      query.number = parseInt(number);
+    }
+    console.log(query);
+    await Profile.countDocuments(query, (err, val) => {
+      if (err) {
+        throw new Error(err.message);
+      }
+      count = val;
+    });
+    const result = await Profile.find(query, null, {
+      limit,
+      skip: limit * page,
+      sort: {
+        createdAt: "asc",
+      },
+    })
+      .populate({ path: "team", populate: { path: "league" } })
+      .select("team name number");
+    res.json({ players: result, count: Math.ceil(count / limit) });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: err.message });
+  }
+});
+
 // // get all players (paging)
 // router.get("/", userAuth, async (req, res) => {
 //   try {
