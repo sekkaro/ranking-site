@@ -30,18 +30,21 @@ export const getAllTeams = (page, keyword) =>
     }
   });
 
-export const getAllTeamsFast = (keyword) =>
+export const getAllTeamsFast = (keyword, league) =>
   new Promise(async (resolve, reject) => {
     try {
       cancel && cancel();
       const CancelToken = axios.CancelToken;
       const token = localStorage.getItem("token");
-      const result = await axios.get(`${teamsUri}/fast?keyword=${keyword}`, {
-        headers: {
-          Authorization: token,
-        },
-        cancelToken: new CancelToken((canceler) => (cancel = canceler)),
-      });
+      const result = await axios.get(
+        `${teamsUri}/fast?keyword=${keyword}&league=${league}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+          cancelToken: new CancelToken((canceler) => (cancel = canceler)),
+        }
+      );
 
       if (result.data.message) {
         throw new Error(result.data.message);

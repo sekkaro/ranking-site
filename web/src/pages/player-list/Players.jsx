@@ -12,6 +12,8 @@ import {
   Button,
   InputAdornment,
   IconButton,
+  MenuItem,
+  Select,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
@@ -24,6 +26,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchPlayers } from "./playersAction";
 import { limit } from "../../constants";
 import CustomTable from "../../components/table/CustomTable";
+import { fetchLeagueNames } from "../teams/teamsAction";
+import { fetchTeamNames } from "../player-create/playerCreateAction";
+import { clearTeamNames } from "../player-create/playerCreateSlice";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,12 +53,20 @@ const Players = ({ location }) => {
   const history = useHistory();
   const queryParams = qs.parse(location.search);
   const page = parseInt(queryParams.page || 1);
-  const { n, num } = queryParams;
+  const { n, num, l, t } = queryParams;
+  const { isLeagueLoading, leagues, leagueError } = useSelector(
+    (state) => state.teams
+  );
   const { isLoading, players, error, count } = useSelector(
     (state) => state.players
   );
+  const { teams, isTeamsLoading, teamsError } = useSelector(
+    (state) => state.playerCreate
+  );
   const [name, setName] = useState(n || "");
   const [number, setNumber] = useState(num || "");
+  const [league, setLeague] = useState(l || "");
+  const [team, setTeam] = useState(t || "");
   // const [isGoalsClicked, setIsGoalsClicked] = useState(sort === "goals");
   // const [isAssistsClicked, setIsAssistsClicked] = useState(sort === "assists");
   // const [isAsc, setIsAsc] = useState(type === "asc");
@@ -64,8 +77,20 @@ const Players = ({ location }) => {
   // }, [dispatch, page, q, sort, type]);
 
   useEffect(() => {
-    dispatch(fetchPlayers(page, n, num));
-  }, [dispatch, page, n, num]);
+    dispatch(fetchPlayers(page, n, num, l, t));
+  }, [dispatch, page, n, num, l, t]);
+
+  useEffect(() => {
+    dispatch(fetchLeagueNames());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (league) {
+      dispatch(fetchTeamNames("", league));
+    } else {
+      dispatch(clearTeamNames());
+    }
+  }, [dispatch, league]);
 
   const handlePageChange = (_, page) => {
     history.push({ search: qs.stringify({ ...queryParams, page }) });
@@ -75,14 +100,25 @@ const Players = ({ location }) => {
     const { name, value } = e.target;
     if (name === "name") {
       setName(value);
-    } else if(name === "number") {
+    } else if (name === "number") {
       setNumber(value);
+    } else if (name === "league") {
+      setLeague(value);
+    } else if (name === "team") {
+      setTeam(value);
     }
   };
 
   const onSearch = () => {
     history.push({
-      search: qs.stringify({ ...queryParams, n: name, num: number, page: 1 }),
+      search: qs.stringify({
+        ...queryParams,
+        n: name,
+        num: number,
+        l: league,
+        t: team,
+        page: 1,
+      }),
     });
   };
 
@@ -149,6 +185,41 @@ const Players = ({ location }) => {
     <div className={classes.root}>
       <TableContainer className={classes.tableContainer}>
         <div className={classes.search}>
+          {isLeagueLoading ? (
+            <CircularProgress />
+          ) : (
+            <Select
+              name="league"
+              value={league}
+              onChange={handleChange}
+              required
+            >
+              {[{ _id: "", name: "리그 선택" }, ...leagues].map(
+                (league, idx) => (
+                  <MenuItem key={league._id} value={league._id} selected={!idx}>
+                    {league.name}
+                  </MenuItem>
+                )
+              )}
+            </Select>
+          )}
+          {isTeamsLoading ? (
+            <CircularProgress />
+          ) : (
+            <Select name="team" value={team} onChange={handleChange} required>
+              {[
+                {
+                  _id: "",
+                  name: "팀 선택",
+                },
+                ...teams,
+              ].map((team, idx) => (
+                <MenuItem key={team._id} value={team._id} selected={!idx}>
+                  {team.name}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
           <Input
             placeholder="이름"
             value={name}

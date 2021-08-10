@@ -1,6 +1,8 @@
 import express from "express";
+import mongoose from "mongoose";
 import { userAuth } from "../middlewares/authorization";
 import Profile from "../models/Profile";
+import Team from "../models/Team";
 
 const router = express.Router();
 
@@ -46,20 +48,36 @@ router.get("/", userAuth, async (req, res) => {
     const page = parseInt(req.query.page) || 0;
     const name = req.query.name || "";
     const number = req.query.number || "";
-    let count;
+    const league = req.query.league || "";
+    const team = req.query.team || "";
+    // let count;
     let query = {
       name: { $regex: name, $options: "i" },
     };
     if (number && !isNaN(number)) {
       query.number = parseInt(number);
     }
-    console.log(query);
-    await Profile.countDocuments(query, (err, val) => {
-      if (err) {
-        throw new Error(err.message);
+    if (league) {
+      if (team) {
+        query.team = mongoose.Types.ObjectId(team);
+      } else {
+        const teams = await Team.find({
+          league: mongoose.Types.ObjectId(league),
+        }).distinct("_id");
+
+        query.team = { $in: teams };
       }
-      count = val;
-    });
+    }
+
+    // console.log(teams);
+
+    // console.log(query);
+    // await Profile.countDocuments(query, (err, val) => {
+    //   if (err) {
+    //     throw new Error(err.message);
+    //   }
+    //   count = val;
+    // });
     const result = await Profile.find(query, null, {
       limit,
       skip: limit * page,
@@ -67,9 +85,13 @@ router.get("/", userAuth, async (req, res) => {
         createdAt: "asc",
       },
     })
-      .populate({ path: "team", populate: { path: "league" } })
+      .populate({
+        path: "team",
+        populate: { path: "league" },
+      })
       .select("team name number");
-    res.json({ players: result, count: Math.ceil(count / limit) });
+
+    res.json({ players: result, count: Math.ceil(result.length / limit) });
   } catch (err) {
     console.log(err);
     res.json({ message: err.message });

@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import { userAuth } from "../middlewares/authorization";
 import Team from "../models/Team";
 
@@ -72,9 +73,16 @@ router.get("/", userAuth, async (req, res) => {
 router.get("/fast", userAuth, async (req, res) => {
   try {
     const keyword = req.query.keyword || "";
-    const result = await Team.find({
+    const league = req.query.league || "";
+
+    let query = {
       name: { $regex: keyword, $options: "i" },
-    }).select("name");
+    };
+    if (league) {
+      query.league = mongoose.Types.ObjectId(league);
+    }
+
+    const result = await Team.find(query).select("name");
     res.json({ teams: result });
   } catch (err) {
     console.log(err);

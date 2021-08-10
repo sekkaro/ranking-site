@@ -50,6 +50,9 @@ export const createPlayerSlice = createSlice({
       state.isTeamsLoading = false;
       state.teamsError = payload;
     },
+    clearTeamNames: (state) => {
+      state.teams = [];
+    },
   },
 });
 
@@ -63,6 +66,7 @@ export const {
   fetchTeamNamesFail,
   fetchTeamNamesPending,
   fetchTeamNamesSuccess,
+  clearTeamNames,
 } = createPlayerSlice.actions;
 
 export default createPlayerSlice.reducer;

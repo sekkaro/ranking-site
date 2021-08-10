@@ -63,10 +63,10 @@ export const fetchPositionNames = () => async (dispatch) => {
   }
 };
 
-export const fetchTeamNames = (keyword) => async (dispatch) => {
+export const fetchTeamNames = (keyword = "", league = "") => async (dispatch) => {
   try {
     dispatch(fetchTeamNamesPending());
-    const result = await getAllTeamsFast(keyword);
+    const result = await getAllTeamsFast(keyword, league);
     dispatch(fetchTeamNamesSuccess(result));
   } catch (err) {
     console.log(err);

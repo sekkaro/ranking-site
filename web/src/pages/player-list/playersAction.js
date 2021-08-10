@@ -10,14 +10,16 @@ export const fetchPlayers =
   (
     page = 0,
     name = "",
-    number = ""
+    number = "",
+    league = "",
+    team = ""
     // sort = "", type = ""
   ) =>
   async (dispatch) => {
     try {
       dispatch(fetchPlayersPending());
       // const players = await getAllPlayers(page, keyword, sort, type);
-      const players = await getAllPlayers(page, name, number);
+      const players = await getAllPlayers(page, name, number, league, team);
       dispatch(fetchPlayersSuccess(players));
     } catch (err) {
       console.log(err);
