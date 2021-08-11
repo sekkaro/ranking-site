@@ -3,12 +3,13 @@ import { Controller, useForm } from "react-hook-form";
 import {
   Button,
   makeStyles,
-  Input,
-  Select,
   MenuItem,
   CircularProgress,
   TextField,
+  IconButton,
+  InputAdornment,
 } from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { birthdayRegex } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +19,7 @@ import {
   fetchTeamNames,
 } from "./playerCreateAction";
 import { useHistory } from "react-router-dom";
+import { clearTeamNames } from "./playerCreateSlice";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -73,8 +75,18 @@ const PlayerCreate = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    keyword && dispatch(fetchTeamNames(keyword));
+    if (!keyword) {
+      dispatch(clearTeamNames());
+    }
   }, [dispatch, keyword]);
+
+  // useEffect(() => {
+  //   if (keyword) {
+  //     dispatch(fetchTeamNames(keyword));
+  //   } else {
+  //     dispatch(clearTeamNames());
+  //   }
+  // }, [dispatch, keyword]);
 
   return (
     <div className={classes.root}>
@@ -84,9 +96,9 @@ const PlayerCreate = () => {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <>
-              <Input
+              <TextField
                 className={classes.input}
-                placeholder="이름 *"
+                label="이름 *"
                 onBlur={onBlur}
                 onChange={(value) => onChange(value)}
                 value={value}
@@ -109,9 +121,9 @@ const PlayerCreate = () => {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <>
-              <Input
+              <TextField
                 className={classes.input}
-                placeholder="등번호 *"
+                label="등번호 *"
                 onBlur={onBlur}
                 onChange={(value) => onChange(value)}
                 value={value}
@@ -135,19 +147,36 @@ const PlayerCreate = () => {
         />
         <Controller
           control={control}
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange, value, onBlur } }) => (
             <>
               <Autocomplete
                 options={teams}
+                // onSelect={() => dispatch(clearTeamNames())}
                 getOptionSelected={(option) => option?._id || ""}
                 getOptionLabel={(option) => option?.name || ""}
                 style={{ width: 300 }}
                 value={value}
+                onBlur={onBlur}
                 onChange={(e, value) => onChange(value)}
                 inputValue={keyword}
                 onInputChange={(e, value) => setKeyword(value)}
                 renderInput={(params) => (
-                  <TextField {...params} label="팀 *" variant="outlined" />
+                  <div style={{ display: "flex" }}>
+                    <TextField
+                      {...params}
+                      label="팀 *"
+                      variant="outlined"
+                    />
+                    <IconButton
+                      onClick={() => {
+                        if (keyword) {
+                          dispatch(fetchTeamNames(keyword));
+                        }
+                      }}
+                    >
+                      <SearchIcon />
+                    </IconButton>
+                  </div>
                 )}
                 renderOption={(option) => <>{option.name}</>}
                 noOptionsText="검색한 팀 결과가 없습니다."
@@ -171,7 +200,9 @@ const PlayerCreate = () => {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <>
-              <Select
+              <TextField
+                select
+                label="포지션 *"
                 className={classes.input}
                 onBlur={onBlur}
                 value={value}
@@ -180,19 +211,13 @@ const PlayerCreate = () => {
                 {isPositionsLoading ? (
                   <CircularProgress />
                 ) : (
-                  [{ _id: "default", name: "포지션 *" }, ...positions].map(
-                    (position, idx) => (
-                      <MenuItem
-                        key={position._id}
-                        value={position._id}
-                        disabled={!idx}
-                      >
-                        {position.name}
-                      </MenuItem>
-                    )
-                  )
+                  positions.map((position) => (
+                    <MenuItem key={position._id} value={position._id}>
+                      {position.name}
+                    </MenuItem>
+                  ))
                 )}
-              </Select>
+              </TextField>
               {errors?.position?.message && (
                 <span style={{ color: "red" }}>
                   {errors?.position?.message}
@@ -202,17 +227,20 @@ const PlayerCreate = () => {
           )}
           name="position"
           rules={{
-            validate: (value) => value !== "default" || "필수 항목입니다.",
+            required: {
+              value: true,
+              message: "필수 항목입니다.",
+            },
           }}
-          defaultValue="default"
+          defaultValue=""
         />
         <Controller
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <>
-              <Input
+              <TextField
                 className={classes.input}
-                placeholder="생년월일 *"
+                label="생년월일 *"
                 onBlur={onBlur}
                 onChange={(value) => onChange(value)}
                 value={value}
@@ -241,9 +269,9 @@ const PlayerCreate = () => {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <>
-              <Input
+              <TextField
                 className={classes.input}
-                placeholder="나이 *"
+                label="나이 *"
                 onBlur={onBlur}
                 onChange={(value) => onChange(value)}
                 value={value}
@@ -266,9 +294,9 @@ const PlayerCreate = () => {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <>
-              <Input
+              <TextField
                 className={classes.input}
-                placeholder="키 *"
+                label="키 *"
                 onBlur={onBlur}
                 onChange={(value) => onChange(value)}
                 value={value}
@@ -291,9 +319,9 @@ const PlayerCreate = () => {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <>
-              <Input
+              <TextField
                 className={classes.input}
-                placeholder="출신 *"
+                label="출신 *"
                 onBlur={onBlur}
                 onChange={(value) => onChange(value)}
                 value={value}
@@ -316,9 +344,9 @@ const PlayerCreate = () => {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <>
-              <Input
+              <TextField
                 className={classes.input}
-                placeholder="몸무게 *"
+                label="몸무게 *"
                 onBlur={onBlur}
                 onChange={(value) => onChange(value)}
                 value={value}

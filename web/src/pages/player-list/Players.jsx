@@ -19,7 +19,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 // import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 // import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
-import { NavLink, useHistory, withRouter } from "react-router-dom";
+import { Link, NavLink, useHistory, withRouter } from "react-router-dom";
 import qs from "query-string";
 import Pagination from "@material-ui/lab/Pagination";
 import { useSelector, useDispatch } from "react-redux";
@@ -344,6 +344,15 @@ const Players = ({ location }) => {
           page={page}
           onChange={handlePageChange}
         />
+        <Button
+          style={{ float: "right" }}
+          component={Link}
+          to="/create-player"
+          variant="contained"
+          color="primary"
+        >
+          선수 생성
+        </Button>
       </TableContainer>
     </div>
   );

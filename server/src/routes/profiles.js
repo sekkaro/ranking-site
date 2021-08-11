@@ -21,7 +21,13 @@ router.post("/", userAuth, async (req, res) => {
       position,
     } = req.body;
 
-    const profile = new Profile({
+    let profile = await Profile.findOne({ team, number });
+
+    if (profile) {
+      return res.json({ message: "Duplicate Error" });
+    }
+
+    profile = new Profile({
       name,
       team,
       number,

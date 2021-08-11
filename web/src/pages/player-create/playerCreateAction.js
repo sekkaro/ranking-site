@@ -34,7 +34,7 @@ export const addPlayer =
         position
       );
       dispatch(createPlayerSuccess());
-      history.push("/admin"); // todo /players
+      history.push("/players");
     } catch (err) {
       console.log(err);
       if (err.message === "Forbidden") {
@@ -63,18 +63,20 @@ export const fetchPositionNames = () => async (dispatch) => {
   }
 };
 
-export const fetchTeamNames = (keyword = "", league = "") => async (dispatch) => {
-  try {
-    dispatch(fetchTeamNamesPending());
-    const result = await getAllTeamsFast(keyword, league);
-    dispatch(fetchTeamNamesSuccess(result));
-  } catch (err) {
-    console.log(err);
-    if (err.message === "Forbidden") {
-      dispatch(logout(err.message));
-      dispatch(fetchTeamNamesFail(""));
-    } else {
-      dispatch(fetchTeamNamesFail(err.message));
+export const fetchTeamNames =
+  (keyword = "", league = "") =>
+  async (dispatch) => {
+    try {
+      dispatch(fetchTeamNamesPending());
+      const result = await getAllTeamsFast(keyword, league);
+      dispatch(fetchTeamNamesSuccess(result));
+    } catch (err) {
+      console.log(err);
+      if (err.message === "Forbidden") {
+        dispatch(logout(err.message));
+        dispatch(fetchTeamNamesFail(""));
+      } else {
+        dispatch(fetchTeamNamesFail(err.message));
+      }
     }
-  }
-};
+  };
