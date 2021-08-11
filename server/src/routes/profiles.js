@@ -98,6 +98,39 @@ router.get("/", userAuth, async (req, res) => {
   }
 });
 
+// get a player
+router.get("/:id", userAuth, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const player = await Profile.findById(id)
+      .populate({
+        path: "team",
+        populate: { path: "league" },
+      })
+      .populate("position");
+
+    res.json(player);
+  } catch (err) {
+    console.log(err);
+    res.json({ message: err.message });
+  }
+});
+
+// delete a player
+router.delete("/:id", userAuth, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    await Profile.findByIdAndDelete(id);
+
+    res.json({ status: "success" });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: err.message });
+  }
+});
+
 // // get all players (paging)
 // router.get("/", userAuth, async (req, res) => {
 //   try {

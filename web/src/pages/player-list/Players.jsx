@@ -260,12 +260,18 @@ const Players = ({ location }) => {
           data={players}
           emptyMsg="선수가 없습니다"
           renderItem={({ items, idx }) => (
-            <TableRow key={items._id}>
+            <TableRow
+              key={items._id}
+              hover
+              onClick={() => {
+                history.push(`/players/${items._id}`);
+              }}
+            >
               <TableCell>{limit * (page - 1) + idx + 1}</TableCell>
               <TableCell>{items?.team?.league?.name}</TableCell>
               <TableCell>{items.team?.name}</TableCell>
               <TableCell component="th" scope="row">
-                <NavLink to={`/players/${items._id}`}>{items.name}</NavLink>
+                {items.name}
               </TableCell>
               <TableCell>{items.number}</TableCell>
             </TableRow>

@@ -167,15 +167,15 @@ const PlayerDetail = () => {
             </>
           }
           title={player?.name}
-          subheader={`${player?.age}, ${player?.height}cm`}
+          subheader={`${player?.age}, ${player?.height}cm ${player?.weight}kg`}
         />
         <CardContent>
           <Typography component="div">
-            Matches played:{" "}
+            팀:{" "}
             {isEdit ? (
               <Input
-                value={state.player?.matches}
-                name="matches"
+                value={state.player?.team?.name}
+                name="team"
                 onChange={(e) =>
                   playerDispatch({
                     type: "SET",
@@ -185,15 +185,15 @@ const PlayerDetail = () => {
                 }
               />
             ) : (
-              state.player?.matches
+              state.player?.team?.name
             )}
           </Typography>
           <Typography component="div">
-            Goals scored:{" "}
+            등번호:{" "}
             {isEdit ? (
               <Input
-                value={state.player?.goals}
-                name="goals"
+                value={state.player?.number}
+                name="number"
                 onChange={(e) =>
                   playerDispatch({
                     type: "SET",
@@ -203,14 +203,14 @@ const PlayerDetail = () => {
                 }
               />
             ) : (
-              state.player?.goals
+              state.player?.number
             )}
           </Typography>
           <Typography component="div">
-            Assists made:{" "}
+            포지션:{" "}
             {isEdit ? (
               <Input
-                value={state.player?.assists}
+                value={state.player?.position?.name}
                 name="assists"
                 onChange={(e) =>
                   playerDispatch({
@@ -221,10 +221,45 @@ const PlayerDetail = () => {
                 }
               />
             ) : (
-              state.player?.assists
+              state.player?.position?.name
             )}
           </Typography>
-          <Typography>Created by: {player?.creator?.name}</Typography>
+          <Typography component="div">
+            생년월일:{" "}
+            {isEdit ? (
+              <Input
+                value={state.player?.birthday}
+                name="assists"
+                onChange={(e) =>
+                  playerDispatch({
+                    type: "SET",
+                    name: e.target.name,
+                    value: e.target.value,
+                  })
+                }
+              />
+            ) : (
+              state.player?.birthday
+            )}
+          </Typography>
+          <Typography component="div">
+            출신:{" "}
+            {isEdit ? (
+              <Input
+                value={state.player?.origin}
+                name="assists"
+                onChange={(e) =>
+                  playerDispatch({
+                    type: "SET",
+                    name: e.target.name,
+                    value: e.target.value,
+                  })
+                }
+              />
+            ) : (
+              state.player?.origin
+            )}
+          </Typography>
         </CardContent>
       </Card>
     </div>
