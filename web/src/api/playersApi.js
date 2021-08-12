@@ -59,9 +59,7 @@ export const editPlayerDetail = (player) =>
       const result = await axios.put(
         `${playersUri}/${player._id}/edit`,
         {
-          matches: player.matches,
-          goals: player.goals,
-          assists: player.assists,
+          ...player,
         },
         {
           headers: {

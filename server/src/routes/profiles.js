@@ -137,6 +137,47 @@ router.delete("/:id", userAuth, async (req, res) => {
   }
 });
 
+// edit a player
+router.put("/:id/edit", userAuth, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const {
+      name,
+      team,
+      number,
+      birthday,
+      age,
+      height,
+      weight,
+      origin,
+      position,
+    } = req.body;
+
+    const profile = await Profile.findOne({ team, number, _id: { $ne: id } });
+
+    if (profile) {
+      return res.json({ message: "Duplicate Error" });
+    }
+
+    await Profile.findByIdAndUpdate(id, {
+      name,
+      team,
+      number,
+      birthday,
+      age,
+      height,
+      weight,
+      origin,
+      position,
+    });
+
+    res.json({ status: "success" });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: err.message });
+  }
+});
+
 // // get all players (paging)
 // router.get("/", userAuth, async (req, res) => {
 //   try {

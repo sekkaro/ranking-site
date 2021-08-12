@@ -25,6 +25,9 @@ function App() {
           <AdminRoute path="/admin">
             <Admin />
           </AdminRoute>
+          <AdminRoute path="/players/:id/edit">
+            <PlayerCreate />
+          </AdminRoute>
           <AdminRoute path="/players/:id">
             <PlayerDetail />
           </AdminRoute>

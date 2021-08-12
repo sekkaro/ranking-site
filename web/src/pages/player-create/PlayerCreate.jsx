@@ -14,11 +14,11 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { birthdayRegex } from "../../constants";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  addPlayer,
+  addOrEditPlayer,
   fetchPositionNames,
   fetchTeamNames,
 } from "./playerCreateAction";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams, withRouter } from "react-router-dom";
 import { clearTeamNames } from "./playerCreateSlice";
 
 const useStyles = makeStyles((theme) => ({
@@ -43,8 +43,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PlayerCreate = () => {
+const PlayerCreate = ({ location }) => {
   const classes = useStyles();
+  const { id } = useParams();
+  const { player } = location.state;
   const {
     control,
     handleSubmit,
@@ -67,7 +69,8 @@ const PlayerCreate = () => {
   const [keyword, setKeyword] = useState("");
 
   const onSubmit = (data) => {
-    dispatch(addPlayer(history, data));
+    // console.log(data);
+    dispatch(addOrEditPlayer(history, data, id));
   };
 
   useEffect(() => {
@@ -90,7 +93,7 @@ const PlayerCreate = () => {
 
   return (
     <div className={classes.root}>
-      <h2>선수 생성</h2>
+      <h2>선수 {id ? "수정" : "생성"}</h2>
       <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
         <Controller
           control={control}
@@ -115,7 +118,7 @@ const PlayerCreate = () => {
               message: "필수 항목입니다.",
             },
           }}
-          defaultValue=""
+          defaultValue={id ? player?.name : ""}
         />
         <Controller
           control={control}
@@ -143,7 +146,7 @@ const PlayerCreate = () => {
               (!isNaN(value) && parseInt(value) > 0 && parseInt(value) < 100) ||
               "1부터 99까지의 숫자를 입력해주세요.",
           }}
-          defaultValue=""
+          defaultValue={id ? player?.number : ""}
         />
         <Controller
           control={control}
@@ -162,11 +165,7 @@ const PlayerCreate = () => {
                 onInputChange={(e, value) => setKeyword(value)}
                 renderInput={(params) => (
                   <div style={{ display: "flex" }}>
-                    <TextField
-                      {...params}
-                      label="팀 *"
-                      variant="outlined"
-                    />
+                    <TextField {...params} label="팀 *" variant="outlined" />
                     <IconButton
                       onClick={() => {
                         if (keyword) {
@@ -194,7 +193,7 @@ const PlayerCreate = () => {
               message: "필수 항목입니다.",
             },
           }}
-          defaultValue=""
+          defaultValue={id ? player?.team : ""}
         />
         <Controller
           control={control}
@@ -232,7 +231,7 @@ const PlayerCreate = () => {
               message: "필수 항목입니다.",
             },
           }}
-          defaultValue=""
+          defaultValue={id ? player?.position?._id : ""}
         />
         <Controller
           control={control}
@@ -263,7 +262,7 @@ const PlayerCreate = () => {
               message: "생년월일 8자리를 입력해주세요",
             },
           }}
-          defaultValue=""
+          defaultValue={id ? player?.birthday : ""}
         />
         <Controller
           control={control}
@@ -288,7 +287,7 @@ const PlayerCreate = () => {
               message: "필수 항목입니다.",
             },
           }}
-          defaultValue=""
+          defaultValue={id ? player?.age : ""}
         />
         <Controller
           control={control}
@@ -313,7 +312,7 @@ const PlayerCreate = () => {
               message: "필수 항목입니다.",
             },
           }}
-          defaultValue=""
+          defaultValue={id ? player?.height : ""}
         />
         <Controller
           control={control}
@@ -338,7 +337,7 @@ const PlayerCreate = () => {
               message: "필수 항목입니다.",
             },
           }}
-          defaultValue=""
+          defaultValue={id ? player?.origin : ""}
         />
         <Controller
           control={control}
@@ -363,23 +362,34 @@ const PlayerCreate = () => {
               message: "필수 항목입니다.",
             },
           }}
-          defaultValue=""
+          defaultValue={id ? player?.weight : ""}
         />
         {isLoading ? (
           <CircularProgress />
         ) : (
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            className={classes.button}
-          >
-            생성
-          </Button>
+          <div style={{ display: "flex" }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              className={classes.button}
+            >
+              {id ? "수정" : "생성"}
+            </Button>
+            {id && (
+              <Button
+                variant="contained"
+                onClick={() => history.goBack()}
+                className={classes.button}
+              >
+                취소
+              </Button>
+            )}
+          </div>
         )}
       </form>
     </div>
   );
 };
 
-export default PlayerCreate;
+export default withRouter(PlayerCreate);

@@ -1,4 +1,4 @@
-import { createPlayer } from "../../api/playersApi";
+import { createPlayer, editPlayerDetail } from "../../api/playersApi";
 import { getAllPositionsFast } from "../../api/positionsApi";
 import { getAllTeamsFast } from "../../api/teamsApi";
 import { logout } from "../login/loginAction";
@@ -14,27 +14,44 @@ import {
   fetchTeamNamesSuccess,
 } from "./playerCreateSlice";
 
-export const addPlayer =
+export const addOrEditPlayer =
   (
     history,
-    { name, team, number, birthday, age, height, weight, origin, position }
+    { name, team, number, birthday, age, height, weight, origin, position },
+    id
   ) =>
   async (dispatch) => {
     try {
       dispatch(createPlayerPending());
-      await createPlayer(
-        name,
-        team,
-        number,
-        birthday,
-        age,
-        height,
-        weight,
-        origin,
-        position
-      );
+      if (id) {
+        await editPlayerDetail({
+          _id: id,
+          name,
+          team: team?._id,
+          number,
+          birthday,
+          age,
+          height,
+          weight,
+          origin,
+          position,
+        });
+      } else {
+        await createPlayer(
+          name,
+          team,
+          number,
+          birthday,
+          age,
+          height,
+          weight,
+          origin,
+          position
+        );
+      }
+
       dispatch(createPlayerSuccess());
-      history.push("/players");
+      id ? history.goBack() : history.push("/players");
     } catch (err) {
       console.log(err);
       if (err.message === "Forbidden") {
